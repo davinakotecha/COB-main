@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Steps from '../components/Steps.astro';
+import Generator from '../components/Generator';
+import { config, withBase } from '../lib/site';
+import { RESERVED_WORDS, NAME_MAX, DESC_MAX, BODY_MAX_LINES } from '../lib/skill-rules';
+
+const steps = [
+  { title: 'Spot a task you repeat', body: 'If you keep explaining the same job to Claude, it is a good candidate.' },
+  { title: 'Draft it here', body: 'Use the generator below. It checks the name, the description and the made-up-data rule as you type.' },
+  { title: 'Add a made-up example', body: 'Include a small sample with invented names and figures so others can see it work.' },
+  { title: 'Share it', body: 'Send it to the maintainers, or suggest the idea on the roadmap first. It is reviewed before it joins the library.' },
+];
+---
+
+<Base
+  title="Contribute"
+  current="contribute"
+  description="Turn a task the team repeats into a skill. Draft it with the generator, then share it for review."
+>
+  <PageHead title="Contribute" lede="Turn a task the team repeats into a skill everyone can use. Draft it here, then share it for review." />
+
+  <section aria-labelledby="h-add">
+    <div class="wrap">
+      <h2 id="h-add">Adding a skill, in four steps</h2>
+      <p class="sec-intro">You do not need to be a developer. The generator below writes the starting file for you.</p>
+      <Steps items={steps} columns={4} />
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-gen">
+    <div class="wrap">
+      <h2 id="h-gen">Skill generator</h2>
+      <p class="sec-intro">It checks your skill against the house rules as you type. It runs in your browser and sends nothing anywhere.</p>
+      <Generator client:load ticketPrefix={config.ticketPrefix} fictionalName={config.fictionalName} />
+    </div>
+  </section>
+
+  <section aria-labelledby="h-rules">
+    <div class="wrap">
+      <h2 id="h-rules">The rules in full</h2>
+      <p class="sec-intro">The generator checks most of these for you. They are here so you can see why.</p>
+
+      <details class="fold">
+        <summary>What is inside a skill</summary>
+        <pre class="tree">skills/a-skill/
+  SKILL.md     <em>short body: when to use it, and the recipe</em>
+  references/  <em>detail Claude loads only when needed</em>
+  scripts/     <em>deterministic helpers for the exact steps</em>
+examples/a-skill/
+               <em>made-up samples so others can see it work</em></pre>
+      </details>
+      <details class="fold">
+        <summary>House rules</summary>
+        <p>
+          Keep the SKILL.md body to roughly 150 to 200 lines and push detail into references. Never copy or paraphrase other skills' code or prose. Use only the made-up bank in anything committed ({config.fictionalName}, ticket prefix {config.ticketPrefix}-). Real client files stay in a local, ignored folder.
+        </p>
+      </details>
+      <details class="fold">
+        <summary>Limits from the Agent Skills specification</summary>
+        <p>
+          The name is 1 to {NAME_MAX} characters: lowercase letters, numbers and single hyphens, with no hyphen at either end. It must match the folder name and can't contain {RESERVED_WORDS.map((w) => `"${w}"`).join(' or ')} or any XML tags. The description is 1 to {DESC_MAX} characters, can't contain XML tags, and should say what the skill does and when to use it. Keep the whole SKILL.md under {BODY_MAX_LINES} lines. Claude Code also skips a skill folder named "synced".
+        </p>
+      </details>
+      <details class="fold">
+        <summary>Shipping it and trying it locally</summary>
+        <p>
+          Work on a branch, add the skill folder and made-up samples, add a row to the README skills table, commit with a sign-off and open a pull request. Pull requests come from collaborators only. To try a skill before it merges, copy its folder into your personal skills folder (<code>~/.claude/skills/</code>) and type its name with a slash.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-idea">
+    <div class="wrap">
+      <h2 id="h-idea">Not ready to write one?</h2>
+      <p class="sec-intro">Suggest the idea on the roadmap, and someone on the team can pick it up.</p>
+      <a class="btn pri" href={withBase('/roadmap/')}>Go to the roadmap</a>
+    </div>
+  </section>
+</Base>

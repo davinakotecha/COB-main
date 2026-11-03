@@ -1,0 +1,57 @@
+# Everything specific to this account lives in this folder. Nothing in site/ names it.
+# Fields are explained in docs/ADD-AN-ACCOUNT.md.
+
+siteName: Asset Based Consulting Knowledge Share
+fullName: "IBM x The Co-operative Bank: Asset Based Consulting Knowledge Share"
+leadBrand: IBM
+clientName: The Co-operative Bank
+teamPhrase: the IBM consulting team working with The Co-operative Bank
+
+# Project and product words (system names, tool names) that must never appear in the generic core or in
+# the exported template. Checked by `npm run check:genericity` and `npm run make-template`.
+forbiddenTerms:
+  - Genesys
+  - Archy
+  - Playback
+  - Northwind
+
+# Other short forms of the client's name. The genericity and confidentiality checks use these to keep
+# the client out of the generic core, out of the exported template, and out of non-account builds.
+clientAliases:
+  - Co-operative
+  - Co-op
+
+# Non-text markers on the account pages only (never text, links, buttons or backgrounds).
+# Must reach 3:1 contrast on white and on #161616. `npm run check:account` tests it.
+# TO CONFIRM: taken from the light-blue part of the stand-in wordmark, not from brand guidelines.
+accentColour: "#0d9ad2"
+
+# Files in account/brand/. The reversed (white) files are used on dark surfaces.
+# TO CONFIRM: the files below are public stand-ins from Wikimedia Commons. Swap in the official
+# SVGs before the site is widely shared. No reversed files exist yet, so on dark surfaces each
+# logo sits on a small white tile (the fallback in the build plan, section 4.5).
+logos:
+  ibm: brand/ibm.svg
+  ibmReversed: null
+  client: brand/client.svg
+  clientReversed: null
+
+# Install commands, "View on GitHub" and the issue form are built from this.
+repoUrl: https://github.com/davinakotecha/COB-skills
+
+# TO CONFIRM: "Conversational AI delivery" is a placeholder. Replace with the account's real names.
+workstreams:
+  - Conversational AI delivery
+
+# The made-up bank used in every example, and its ticket prefix (the confidentiality rules use both).
+ticketPrefix: NWB
+fictionalName: Northwind Bank
+
+# Optional: where to ask for help (shown in the footer and on How it works).
+contactRoute: null
+
+# Default brand mode when PUBLIC_BRAND_MODE is not set: account | ibm-only | neutral.
+brandMode: account
+
+# Keep search engines away until the owner decides. This is not access control.
+noindex: true

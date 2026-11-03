@@ -1,0 +1,157 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Steps from '../components/Steps.astro';
+import WhyShare from '../components/WhyShare.astro';
+import Chat from '../components/Chat.astro';
+import { copy, fill, withBase } from '../lib/site';
+
+// The data rule is the one piece the account lead must approve. An account can replace it in copy.yaml.
+const data = copy?.groundRules?.data ?? {
+  title: "Follow the account's data rules",
+  body: 'A skill is a set of instructions. It is not a different way of handling data. Anything you give Claude falls under the same client data rules as any other use of AI tools on the account. Ask your lead if you are unsure.',
+  draft: true,
+};
+
+const rules = [
+  {
+    title: 'Examples use made-up data',
+    body: 'Every example in the library uses made-up names and figures. Real client files, names and ticket numbers never go into the shared library.',
+  },
+  { title: data.title, body: data.body, draft: !!data.draft },
+  {
+    title: 'Check the work',
+    body: "Review what Claude produces before you rely on it, as you would a colleague's work. Skills flag what they could not check.",
+  },
+  { title: 'New skills are reviewed first', body: 'The maintainers look at every new skill before it joins the library.' },
+];
+
+const join = [
+  { title: 'Someone spots a repeated task', body: 'They keep explaining the same job to Claude.' },
+  { title: 'They write it down as a skill', body: 'The generator on the Contribute page helps.' },
+  { title: 'The maintainers review it', body: 'They check it follows the house rules.' },
+  { title: 'It joins the library', body: 'Everyone on the account can now use it.' },
+];
+---
+
+<Base
+  title="How it works"
+  current="how"
+  description="What a Claude skill is, how to use one in three steps, and how new skills join the library."
+>
+  <PageHead
+    title="How it works"
+    lede={fill('This space is where {teamPhrase} shares Claude skills. Here is what a skill is, how to use one, and how new ones join the library.')}
+  />
+
+  <section aria-labelledby="h-what">
+    <div class="wrap grid">
+      <div class="c-a">
+        <h2 id="h-what">What is a skill?</h2>
+        <p class="body">
+          A skill is a short set of written instructions, sometimes with helper files, that teaches Claude how our team does one job. For example, turning a week of workshop notes into the standard status update.
+        </p>
+        <p class="body">
+          Claude keeps a one-line description of every skill in mind and opens the full instructions only when a job calls for it, so skills stay out of the way the rest of the time. Because the instructions are written down once, everyone gets the same approach.
+        </p>
+      </div>
+      <div class="c-b">
+        <div class="panel">
+          <div class="panel-h"><span>What is inside a skill</span><span>A folder of files</span></div>
+          <div class="st-b">
+            <pre class="tree">a-skill/
+  SKILL.md     <em>when to use it, and how to do the job</em>
+  references/  <em>detail Claude reads only if needed</em>
+  scripts/     <em>helpers for the exact steps</em>
+  examples/    <em>made-up samples so you can see it work</em></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-steps">
+    <div class="wrap">
+      <h2 id="h-steps">Using a skill, in three steps</h2>
+      <ol class="vsteps rv">
+        <li>
+          <b class="vnum">1</b>
+          <div>
+            <h3>Find a skill</h3>
+            <p>Open the Skills library. Each skill says what you give it, what you get back, and what it needs on your machine.</p>
+            <p class="dt">Look for the workstream that matches your work. <a href={withBase('/skills/')}>Open the library</a></p>
+          </div>
+        </li>
+        <li>
+          <b class="vnum">2</b>
+          <div>
+            <h3>Add it to Claude</h3>
+            <p>Follow the short setup on the skill's page. You do this once per skill.</p>
+            <p class="dt">Works in Claude Code and in claude.ai, and each skill page shows the steps for both.</p>
+          </div>
+        </li>
+        <li>
+          <b class="vnum">3</b>
+          <div>
+            <h3>Ask Claude for the job</h3>
+            <p>Describe the task in plain words, as you would to a colleague. Claude recognises when the skill applies and follows the team's way of working.</p>
+            <p class="dt">You can also name the skill to be sure it is used. Check the result as you would any colleague's work.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-look">
+    <div class="wrap">
+      <h2 id="h-look">What it looks like</h2>
+      <p class="sec-intro">
+        An illustration with made-up details. A consultant has pasted in notes from the week's workshops, and an example skill turns them into the team's standard status update.
+      </p>
+      <Chat />
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-why">
+    <div class="wrap">
+      <h2 id="h-why">Why share skills?</h2>
+      <p class="sec-intro">Build it once, and the whole account benefits.</p>
+      <WhyShare extra />
+    </div>
+  </section>
+
+  <section aria-labelledby="h-rules">
+    <div class="wrap">
+      <h2 id="h-rules">Ground rules</h2>
+      <ul class="rules">
+        {
+          rules.map((r) => (
+            <li>
+              <h3>{r.title}</h3>
+              <p>
+                {r.body}
+                {r.draft && <em class="draft">Wording to be confirmed with the account lead</em>}
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-join">
+    <div class="wrap">
+      <h2 id="h-join">How a skill joins the library</h2>
+      <p class="sec-intro">Anyone on the team can start one.</p>
+      <Steps items={join} columns={4} numbered={false} />
+      <div class="after"><a class="btn pri" href={withBase('/contribute/')}>Add a skill</a></div>
+    </div>
+  </section>
+
+  <div class="bandblue">
+    <div class="wrap">
+      <p>Ready to try one?</p>
+      <a class="btn" href={withBase('/skills/')}>Browse the Skills library</a>
+    </div>
+  </div>
+</Base>

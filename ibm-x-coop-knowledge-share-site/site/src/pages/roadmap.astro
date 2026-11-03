@@ -1,0 +1,75 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { skills, skillBySlug, roadmapSeeds, issueUrl, withBase } from '../lib/site';
+import { inlineCode } from '../lib/text';
+
+interface Card {
+  title: string;
+  summary: string;
+  tag: string | null;
+  href?: string;
+}
+
+// Ideas and In progress come from the account's roadmap.yaml. Live is generated from skills/.
+const tagFor = (slug?: string) => (slug ? (skillBySlug(slug)?.workstream ?? slug) : null);
+const fromSeeds = (status: string): Card[] =>
+  roadmapSeeds.filter((r) => r.status === status).map((r) => ({ title: r.title, summary: r.summary, tag: tagFor(r.skill) }));
+
+const columns: { title: string; cards: Card[]; empty: string }[] = [
+  { title: 'Ideas', cards: fromSeeds('idea'), empty: 'No ideas yet. Propose a skill to start the list.' },
+  { title: 'In progress', cards: fromSeeds('in-progress'), empty: 'Nothing in progress. Pick an idea and open an issue to claim it.' },
+  {
+    title: 'Live',
+    cards: skills.map((s) => ({ title: s.name, summary: s.tagline, tag: s.workstream, href: withBase(`/skills/${s.slug}/`) })),
+    empty: 'No live skills yet.',
+  },
+];
+---
+
+<Base title="Roadmap" current="roadmap" description="Skills the team has asked for, the ones being built, and the ones already live.">
+  <PageHead title="Roadmap" account lede="Skills the team has asked for, the ones being built, and the ones already live." />
+
+  <section>
+    <div class="wrap">
+      <div class="road rv" id="roadGrid">
+        {
+          columns.map((col) => (
+            <div class="col">
+              <h3>
+                <i class="mk" aria-hidden="true" />
+                {col.title}
+                <span class="n" data-count={col.cards.length}>{col.cards.length}</span>
+              </h3>
+              <div>
+                {col.cards.length === 0 ? (
+                  <div class="empty">{col.empty}</div>
+                ) : (
+                  col.cards.map((c) => (
+                    <details class="card">
+                      <summary>{c.title}</summary>
+                      <p set:html={inlineCode(c.summary)} />
+                      {c.href && (
+                        <p>
+                          <a href={c.href}>View skill</a>
+                        </p>
+                      )}
+                      {c.tag && (
+                        <span class="tag2"><i class="mk" aria-hidden="true" />{c.tag}</span>
+                      )}
+                    </details>
+                  ))
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div class="road-act">
+        <a class="btn pri" href={issueUrl} target="_blank" rel="noopener noreferrer">Propose a skill</a>
+        <a class="btn sec" href={withBase('/contribute/')}>How to add a skill</a>
+      </div>
+      <p class="note">Propose a skill opens a pre-filled issue on GitHub in a new tab. You need a GitHub account to submit it. Do not include client data.</p>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,68 @@
+# Account configuration for the Asset Based Consulting Knowledge Share site.
+# Copy this folder to `account/` (make-template does it for you) and fill in your own values.
+# Every field below is explained in docs/ADD-AN-ACCOUNT.md. Run `npm run check:account` to validate it.
+
+# The name shown in the masthead, the hero headline and page titles.
+siteName: Asset Based Consulting Knowledge Share
+
+# The long name used in page titles and the footer, for example "IBM x Your Client: <siteName>".
+fullName: "IBM x Example Account: Asset Based Consulting Knowledge Share"
+
+# The brand that leads. IBM for IBM Consulting accounts. Its logo always comes first and is never the smaller one.
+leadBrand: IBM
+
+# The client's name, as it should appear in the account chip and the hero line.
+clientName: Example Account
+
+# How the home page refers to your team. It fills in "A shared space where ... finds, uses and builds Claude skills".
+teamPhrase: the IBM consulting team working with Example Account
+
+# Project and product words (system names, tool names) that must never appear in the generic core or in
+# the template you export. Checked by `npm run check:genericity`. Leave the list empty if there are none.
+forbiddenTerms: []
+
+# Other short forms of the client's name. They are used only by checks that keep the client out of the
+# generic core and out of non-account builds. Leave the list empty if there are none.
+clientAliases: []
+
+# One accent colour for small square markers on the account pages (the Skills library and Roadmap).
+# It is never used for text, links, buttons or backgrounds. It must have 3:1 contrast on white and on
+# #161616, which `npm run check:account` tests. This placeholder is a Carbon teal.
+accentColour: "#009d9a"
+
+# Logo files, relative to this folder. Use the official SVGs supplied by the brand owners.
+# Never redraw, trace, recolour or crop a logo. The `*Reversed` files are the white versions used on dark
+# surfaces. If you do not have a reversed file, leave it null and the build shows that logo on a small white
+# tile in dark mode instead. These placeholders are dashed outlines, not anyone's real logo.
+logos:
+  ibm: brand/ibm.svg
+  ibmReversed: null
+  client: brand/client.svg
+  clientReversed: null
+
+# Your skills repository. Install commands, "View on GitHub" and the "Propose a skill" form are built from it.
+# The site address is derived from it too: https://<owner>.github.io/<repo>/
+repoUrl: https://github.com/your-organisation/your-skills-repo
+
+# Your workstreams, in the order they should appear in the Skills library filter.
+# Every skill in skill-meta.yaml must use one of these names.
+workstreams:
+  - Example workstream
+
+# A made-up bank (or company) and ticket prefix used in every example, so no real names or ticket keys
+# ever reach the repo. The generator and the confidentiality check use the prefix.
+ticketPrefix: EXA
+fictionalName: Example Bank
+
+# Optional: where to ask for help. Shown in the footer.
+contactRoute: null
+
+# Which brand mode to build when nothing else says. One of:
+#   account  - lead and client logos, client name, accent colour
+#   ibm-only - lead logo only, no client name or accent
+#   neutral  - no logos, no client name (safe default for a public repo)
+# A repository variable called PUBLIC_BRAND_MODE overrides this in CI.
+brandMode: neutral
+
+# Keep search engines away until you decide to be found. This is a hint, not access control.
+noindex: true

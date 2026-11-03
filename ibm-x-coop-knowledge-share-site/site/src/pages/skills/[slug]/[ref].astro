@@ -1,0 +1,55 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHead from '../../../components/PageHead.astro';
+import Toc from '../../../components/Toc.astro';
+import { skills, skillBySlug, withBase, repoUrl } from '../../../lib/site';
+import { getDoc, renderDoc } from '../../../lib/skills';
+
+export function getStaticPaths() {
+  return skills.flatMap((s) => s.references.map((r) => ({ params: { slug: s.slug, ref: r.slug } })));
+}
+
+const { slug, ref } = Astro.params;
+const skill = skillBySlug(slug as string)!;
+const meta = skill.references.find((r) => r.slug === ref)!;
+const doc = await getDoc(skill.slug, ref as string);
+if (!doc) throw new Error(`skills/${skill.slug}/references/${meta.file} was not loaded by the skillDocs collection.`);
+const { Content, headings } = await renderDoc(doc);
+---
+
+<Base title={`${meta.title} - ${skill.name}`} current="skills" description={`Reference for the ${skill.name} skill: ${meta.title}.`}>
+  <PageHead title={meta.title} account>
+    <p class="crumb" slot="crumb">
+      <a href={withBase('/skills/')}>Skills library</a> / <a href={withBase(`/skills/${skill.slug}/`)}>{skill.name}</a> / {meta.file}
+    </p>
+  </PageHead>
+
+  <section>
+    <div class="wrap grid">
+      <div class="main-col">
+        <div class="md"><Content /></div>
+      </div>
+      <aside class="rail-col" aria-label="Reference navigation">
+        <a class="btn sec sm block" href={withBase(`/skills/${skill.slug}/`)}>Back to {skill.name}</a>
+        <a class="btn sec sm block" href={`${repoUrl}/blob/main/${skill.skillPath}/references/${meta.file}`} target="_blank" rel="noopener noreferrer">
+          View on GitHub
+        </a>
+        <div style="margin-top:24px"><Toc headings={headings} /></div>
+        {
+          skill.references.length > 1 && (
+            <>
+              <h2>Other references</h2>
+              <ul class="files">
+                {skill.references
+                  .filter((r) => r.slug !== ref)
+                  .map((r) => (
+                    <li><a href={withBase(`/skills/${skill.slug}/${r.slug}/`)}>{r.title}</a></li>
+                  ))}
+              </ul>
+            </>
+          )
+        }
+      </aside>
+    </div>
+  </section>
+</Base>

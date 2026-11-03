@@ -1,0 +1,15 @@
+---
+// The logo lockup: lead brand first, a thin rule, then the client. IBM leads and is never smaller.
+import Logo from './Logo.astro';
+import { logos } from '../lib/site';
+---
+
+{
+  (logos.lead || logos.client) && (
+    <span class="plate">
+      {logos.lead && <Logo logo={logos.lead} class="logo-lead" />}
+      {logos.lead && logos.client && <span class="psep" aria-hidden="true" />}
+      {logos.client && <Logo logo={logos.client} class="logo-client" />}
+    </span>
+  )
+}

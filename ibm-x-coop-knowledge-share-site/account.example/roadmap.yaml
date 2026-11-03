@@ -1,0 +1,7 @@
+# Ideas and in-progress work for the Roadmap page. The "Live" column is generated from skills/.
+# status: idea | in-progress
+# skill: optional, the slug of a skill this relates to (its workstream becomes the tag).
+- id: action-tracker
+  title: Action tracker
+  status: idea
+  summary: Keep a running list of actions from every meeting summary and flag the overdue ones.

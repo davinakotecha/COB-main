@@ -1,0 +1,15 @@
+---
+// The small chip with the account square. In neutral and IBM-only modes it says "Our account".
+import { t } from '../lib/site';
+
+interface Props {
+  /** Add the line "This page belongs to this account." after the chip. */
+  line?: boolean;
+}
+const { line = false } = Astro.props;
+---
+
+<p class="acctline">
+  <span class="chip"><i class="mk" aria-hidden="true"></i><span>{t.clientName}</span></span>
+  {line && <span>This page belongs to this account.</span>}
+</p>

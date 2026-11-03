@@ -1,0 +1,10 @@
+common:
+  tasks:
+    - task:
+        name: Shared Greeting
+        refId: sharedGreeting
+        actions:
+          - playAudio:
+              name: Play Welcome
+              refId: playWelcome
+              target: WelcomeAudio

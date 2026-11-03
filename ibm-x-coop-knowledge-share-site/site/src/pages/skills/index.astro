@@ -1,0 +1,77 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import SkillTile from '../../components/SkillTile.astro';
+import { skills, workstreams, withBase } from '../../lib/site';
+
+// Workstreams from the account config, in its order, then any a skill uses that the config lacks
+// (an unlisted one shows as "Unsorted" or by its own name, and the build prints a warning).
+const used = new Set(skills.map((s) => s.workstream));
+const ordered = [...workstreams.filter((w) => used.has(w)), ...[...used].filter((w) => !workstreams.includes(w))];
+const count = (w: string) => skills.filter((s) => !w || s.workstream === w).length;
+---
+
+<Base
+  title="Skills library"
+  current="skills"
+  description="Every skill the team has shared. Each page says what the skill does, what you give it, and how to add it to Claude."
+>
+  <PageHead
+    title="Skills library"
+    account
+    lede="Every skill the team has shared. Each page says what the skill does, what you give it, and how to add it to Claude."
+  />
+
+  <section>
+    <div class="wrap">
+      {
+        ordered.length > 1 && (
+          <div class="chips" id="chips" role="group" aria-label="Filter by workstream" hidden>
+            <button type="button" data-ws="" aria-pressed="true">
+              All ({count('')})
+            </button>
+            {ordered.map((w) => (
+              <button type="button" data-ws={w} aria-pressed="false">
+                {w} ({count(w)})
+              </button>
+            ))}
+          </div>
+        )
+      }
+      <div class="tiles" id="libTiles">
+        {skills.map((s) => <SkillTile skill={s} />)}
+        <article class="tile invite" data-invite>
+          <p class="tg">Have a job you explain to Claude every week?</p>
+          <p class="sub2">Turn it into a skill and share it with the account.</p>
+          <div class="acts"><a class="btn sec sm" href={withBase('/contribute/')}>Add a skill</a></div>
+        </article>
+      </div>
+      <p class="sub2" id="libEmpty" hidden style="margin-top:24px;color:var(--text-2)">
+        No skills in this workstream yet. Pick another, or add one from the Contribute page.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // The filter needs JavaScript, so the chips stay hidden without it and every tile shows.
+  const chips = document.getElementById('chips');
+  if (chips) {
+    chips.hidden = false;
+    const tiles = Array.from(document.querySelectorAll<HTMLElement>('#libTiles .tile:not([data-invite])'));
+    const empty = document.getElementById('libEmpty');
+    chips.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-ws]');
+      if (!btn) return;
+      const ws = btn.dataset.ws ?? '';
+      chips.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      let shown = 0;
+      for (const t of tiles) {
+        const on = !ws || t.dataset.ws === ws;
+        t.hidden = !on;
+        if (on) shown++;
+      }
+      if (empty) empty.hidden = shown > 0;
+    });
+  }
+</script>

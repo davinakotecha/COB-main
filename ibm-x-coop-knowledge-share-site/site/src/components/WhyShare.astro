@@ -1,0 +1,38 @@
+---
+// Three short points, shared by Home and How it works. `extra` adds one more sentence to each.
+interface Props {
+  extra?: boolean;
+}
+const { extra = false } = Astro.props;
+const points = [
+  {
+    title: 'The same approach, whoever asks',
+    body: 'The way of doing the job is written down once, so it does not depend on who remembers it.',
+    more: 'Two people asking for the same thing get the same shape of answer.',
+  },
+  {
+    title: 'Improvements reach everyone',
+    body: 'There is one copy of each skill to improve, so a fix helps the whole account at once.',
+    more: 'When someone finds a better way, they update the skill instead of telling people.',
+  },
+  {
+    title: 'Faster starts for new joiners',
+    body: 'A new team member picks up what the team has already learned, instead of working it out again.',
+    more: 'The library shows what is already covered, so nobody rebuilds it.',
+  },
+];
+---
+
+<div class="three">
+  {
+    points.map((p) => (
+      <div>
+        <h3>{p.title}</h3>
+        <p>
+          {p.body}
+          {extra && ` ${p.more}`}
+        </p>
+      </div>
+    ))
+  }
+</div>

@@ -1,0 +1,39 @@
+# Real, client-specific working files belong in local/ and stay out of git.
+/local/
+/private/
+
+# Build output and installed packages
+node_modules/
+site/dist/
+site/.astro/
+site/src/generated/
+site/src/styles/tokens.generated.css
+site/public/brand/
+site/public/downloads/
+/template-*/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# PowerPoint files outside examples/ (real decks stay local)
+*.pptx
+*.potx
+!examples/**/*.pptx
+!examples/**/*.potx
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+tmp/
+*.tmp

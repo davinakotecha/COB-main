@@ -1,0 +1,30 @@
+---
+// "On this page": the headings of the rendered document, two levels deep.
+// Depths are taken relative to the shallowest heading, because SKILL.md headings are demoted one
+// level to sit under the page's own h2 and the renderer may report either number.
+import type { Heading } from '../lib/skills';
+
+interface Props {
+  headings: Heading[];
+}
+const all = Astro.props.headings;
+const top = all.length ? Math.min(...all.map((h) => h.depth)) : 0;
+const items = all.filter((h) => h.depth <= top + 1);
+---
+
+{
+  items.length > 0 && (
+    <>
+      <h2>On this page</h2>
+      <ul data-toc>
+        {items.map((h) => (
+          <li>
+            <a href={`#${h.slug}`} style={h.depth > top ? 'padding-left:28px;font-size:14px' : undefined}>
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </>
+  )
+}

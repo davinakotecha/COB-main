@@ -1,0 +1,19 @@
+# Ideas and in-progress work for the Roadmap page. "Live" is generated from skills/.
+# status: idea | in-progress
+# TO CONFIRM: these three seeds come from gaps visible in the skills' own code and docs.
+# Replace them with the team's real backlog.
+- id: journey-tag-for-diffs
+  title: Journey tag for flow diffs
+  status: idea
+  skill: diff-summariser
+  summary: The Architect JSON and Archy YAML diff scripts never set `journey`, so slide grouping falls back to the technical flow name. Add a --journey option so changes group the way stakeholders think.
+- id: fragment-aware-archy-diff
+  title: Diff inside shared Archy fragments
+  status: idea
+  skill: diff-summariser
+  summary: With --resolve-refs the Archy diff can say a ref target resolves, but not what changed inside it. Follow the reference and report changes in the fragment.
+- id: test-kpi-check
+  title: Test KPI check for Playback slides
+  status: idea
+  skill: playback-deck
+  summary: Slide pattern 4 asks for a manual cross-check between the stat tiles and the results table. A helper could compute the pass rate from raw counts and flag mismatches.

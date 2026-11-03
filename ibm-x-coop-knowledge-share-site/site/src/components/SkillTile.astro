@@ -1,0 +1,34 @@
+---
+import type { Skill } from '../lib/site';
+import { withBase } from '../lib/site';
+
+interface Props {
+  skill: Skill;
+}
+const { skill } = Astro.props;
+---
+
+<article class="tile" data-ws={skill.workstream}>
+  <span class="tag2"><i class="mk" aria-hidden="true"></i>{skill.workstream}</span>
+  <span class="nm">{skill.name}</span>
+  <p class="tg">{skill.tagline}</p>
+  {
+    (skill.give || skill.get) && (
+      <dl>
+        {skill.give && (
+          <>
+            <dt>You give it</dt>
+            <dd>{skill.give}</dd>
+          </>
+        )}
+        {skill.get && (
+          <>
+            <dt>You get</dt>
+            <dd>{skill.get}</dd>
+          </>
+        )}
+      </dl>
+    )
+  }
+  <div class="acts"><a class="btn pri sm" href={withBase(`/skills/${skill.slug}/`)}>View skill</a></div>
+</article>

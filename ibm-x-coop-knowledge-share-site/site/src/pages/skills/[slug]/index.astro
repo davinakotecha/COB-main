@@ -1,0 +1,201 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHead from '../../../components/PageHead.astro';
+import Toc from '../../../components/Toc.astro';
+import WorkedExample from '../../../components/WorkedExample';
+import InstallPanel from '../../../components/InstallPanel';
+import { skills, skillBySlug, demo, repoUrl, repoName, withBase } from '../../../lib/site';
+import { getDoc, renderDoc } from '../../../lib/skills';
+import { formatDate } from '../../../lib/text';
+
+export function getStaticPaths() {
+  return skills.map((s) => ({ params: { slug: s.slug } }));
+}
+
+const { slug } = Astro.params;
+const skill = skillBySlug(slug as string)!;
+const doc = await getDoc(skill.slug, null);
+if (!doc) throw new Error(`skills/${skill.slug}/SKILL.md was not loaded by the skillDocs collection.`);
+const { Content, headings } = await renderDoc(doc);
+
+const example = skill.example ? demo.examples[skill.example] : undefined;
+const pair = skill.pairsWith ? skillBySlug(skill.pairsWith) : undefined;
+const changed = formatDate(skill.lastChanged);
+const zipHref = withBase(`/downloads/${skill.slug}.zip`);
+const githubHref = `${repoUrl}/tree/main/${skill.skillPath}`;
+const exampleHref = skill.exampleDir ? `${repoUrl}/tree/main/${skill.exampleDir}` : null;
+const hasPlain = !!(skill.give || skill.get || skill.needs);
+---
+
+<Base title={skill.name} current="skills" description={skill.tagline}>
+  <PageHead title={skill.name} lede={skill.tagline} account mono>
+    <p class="crumb" slot="crumb"><a href={withBase('/skills/')}>Skills library</a> / {skill.name}</p>
+  </PageHead>
+
+  <section>
+    <div class="wrap grid">
+      <div class="main-col">
+        {
+          hasPlain && (
+            <>
+              <h2 id="what-it-does">What it does</h2>
+              <dl class="gdl">
+                {skill.give && (
+                  <>
+                    <dt>You give it</dt>
+                    <dd>{skill.give}</dd>
+                  </>
+                )}
+                {skill.get && (
+                  <>
+                    <dt>You get</dt>
+                    <dd>{skill.get}</dd>
+                  </>
+                )}
+                {skill.needs && (
+                  <>
+                    <dt>It needs</dt>
+                    <dd>{skill.needs}</dd>
+                  </>
+                )}
+              </dl>
+            </>
+          )
+        }
+
+        {
+          example && (
+            <>
+              <h2 id="see-it-work">See it work</h2>
+              <WorkedExample client:visible example={example} />
+              {skill.fictionalFiles.map((f) => (
+                <p class="note">
+                  <a class="dl-link" href={withBase(`/downloads/${f}`)} download>
+                    Download the fictional template
+                  </a>{' '}
+                  ({f}, made-up content only)
+                </p>
+              ))}
+            </>
+          )
+        }
+
+        <h2 id="add-it-to-claude">Add it to Claude</h2>
+        <InstallPanel client:visible slug={skill.slug} repoUrl={repoUrl} repoName={repoName} zipHref={zipHref} />
+
+        {
+          pair && (
+            <>
+              <h2 id="works-with">Works with {pair.name}</h2>
+              <p class="body">{skill.pairsWhy ?? `${skill.name} and ${pair.name} can be used together.`} Each skill works on its own.</p>
+              {skill.pairsVia && (
+                <div class="compose rv" aria-hidden="true">
+                  <span class="pill">{skill.name}</span>
+                  <span class="wire"><i /></span>
+                  <span class="pill mid">{skill.pairsVia}</span>
+                  <span class="wire w2"><i /></span>
+                  <span class="pill">{pair.name}</span>
+                </div>
+              )}
+              <p class="body"><a href={withBase(`/skills/${pair.slug}/`)}>View {pair.name}</a></p>
+            </>
+          )
+        }
+
+        <h2 id="full-detail">The full skill</h2>
+        {
+          skill.description && (
+            <details class="fold">
+              <summary>When Claude uses this</summary>
+              <p>{skill.description}</p>
+            </details>
+          )
+        }
+        <div class="md" style="margin-top:32px">
+          <Content />
+        </div>
+
+        {
+          skill.references.length > 0 && (
+            <>
+              <h2 id="references">Reference pages</h2>
+              <ul class="body">
+                {skill.references.map((r) => (
+                  <li>
+                    <a href={withBase(`/skills/${skill.slug}/${r.slug}/`)}>{r.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )
+        }
+      </div>
+
+      <aside class="rail-col" aria-label="At a glance">
+        <h2>At a glance</h2>
+        <dl>
+          <dt>Workstream</dt>
+          <dd>{skill.workstream}</dd>
+          <dt>Status</dt>
+          <dd>{skill.status}</dd>
+          <dt>Last changed</dt>
+          <dd>{changed ?? 'Not available in this build'}</dd>
+        </dl>
+        <a class="btn pri sm block" href={githubHref} target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        <a class="btn sec sm block" href={zipHref} download>Download zip</a>
+
+        <div style="margin-top:24px"><Toc headings={headings} /></div>
+
+        <h2>Files</h2>
+        <ul class="files">
+          <li><code>SKILL.md</code></li>
+          {
+            skill.references.map((r) => (
+              <li>
+                <a href={withBase(`/skills/${skill.slug}/${r.slug}/`)}><code>references/{r.file}</code></a>
+              </li>
+            ))
+          }
+          {
+            skill.scripts.map((s) => (
+              <li>
+                <details>
+                  <summary><code>scripts/{s.file}</code></summary>
+                  {s.usage && <pre>{s.usage}</pre>}
+                  <a href={`${repoUrl}/blob/main/${skill.skillPath}/scripts/${s.file}`} target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                </details>
+              </li>
+            ))
+          }
+          {
+            exampleHref && (
+              <li>
+                <a href={exampleHref} target="_blank" rel="noopener noreferrer"><code>{skill.exampleDir}/</code></a>
+              </li>
+            )
+          }
+        </ul>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Highlight the current section in "On this page" while scrolling. Presentation only.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc] a'));
+  if (links.length && 'IntersectionObserver' in window) {
+    const byId = new Map(links.map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
+    const targets = [...byId.keys()].map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          links.forEach((a) => a.removeAttribute('aria-current'));
+          byId.get(e.target.id)?.setAttribute('aria-current', 'true');
+        }
+      },
+      { rootMargin: '-72px 0px -70% 0px' },
+    );
+    targets.forEach((t) => io.observe(t));
+  }
+</script>

@@ -1,0 +1,21 @@
+---
+import AccountChip from './AccountChip.astro';
+
+interface Props {
+  title: string;
+  lede?: string;
+  /** Account-specific pages show the account chip and "This page belongs to this account." */
+  account?: boolean;
+  mono?: boolean;
+}
+const { title, lede, account = false, mono = false } = Astro.props;
+---
+
+<header class="pagehead">
+  <div class="wrap">
+    {account && <AccountChip line />}
+    <slot name="crumb" />
+    <h1 class:list={{ 'mono-h': mono }}>{title}</h1>
+    {lede && <p class="lede">{lede}</p>}
+  </div>
+</header>

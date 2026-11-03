@@ -1,0 +1,66 @@
+---
+import '@fontsource/ibm-plex-sans/latin-300.css';
+import '@fontsource/ibm-plex-sans/latin-400.css';
+import '@fontsource/ibm-plex-sans/latin-600.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '../styles/tokens.generated.css';
+import '../styles/global.css';
+import PagefindConfig from 'astro-pagefind/components/PagefindConfig.astro';
+import Masthead from '../components/Masthead.astro';
+import Footer from '../components/Footer.astro';
+import { accent, noindex, pageTitle, withBase, t } from '../lib/site';
+import type { NavKey } from '../lib/site';
+
+interface Props {
+  /** The page's own name. The full title is "<page> - <full name>". */
+  title: string;
+  description?: string;
+  current?: NavKey | null;
+  /** Keep this page out of the search index (the 404 page). */
+  noSearch?: boolean;
+}
+const { title, description, current = null, noSearch = false } = Astro.props;
+const fullTitle = pageTitle(title);
+const desc = description ?? `A shared space for ${t.teamPhrase} to find, use and build Claude skills.`;
+---
+
+<!doctype html>
+<html lang="en-GB" data-theme="light" style={accent ? `--acct: ${accent}` : undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <script is:inline>
+      // Runs before first paint: theme from storage, then the system setting; flags for CSS.
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('rm');
+        var stored = null;
+        try {
+          stored = localStorage.getItem('theme');
+        } catch (e) {}
+        var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        d.setAttribute('data-theme', dark ? 'dark' : 'light');
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Masthead current={current} />
+    <main id="main" tabindex="-1" data-pagefind-body={noSearch ? undefined : ''} data-pagefind-ignore={noSearch ? 'all' : undefined}>
+      <slot />
+    </main>
+    <Footer />
+    <div id="toast" role="status" aria-live="polite"></div>
+    <PagefindConfig />
+    <pagefind-modal></pagefind-modal>
+    <script>
+      import '../scripts/site';
+    </script>
+  </body>
+</html>

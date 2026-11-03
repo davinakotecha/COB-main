@@ -1,0 +1,25 @@
+---
+// The numbered row. Numbers appear only where the content really is a sequence.
+interface Item {
+  title: string;
+  body: string;
+}
+interface Props {
+  items: Item[];
+  columns?: 3 | 4;
+  numbered?: boolean;
+}
+const { items, columns = 3, numbered = true } = Astro.props;
+---
+
+<ol class={`row c${columns} rv`}>
+  {
+    items.map((item, i) => (
+      <li>
+        {numbered && <b class="num">{i + 1}</b>}
+        <h3>{item.title}</h3>
+        <p>{item.body}</p>
+      </li>
+    ))
+  }
+</ol>

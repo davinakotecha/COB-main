@@ -1,0 +1,44 @@
+{
+  "name": "knowledge-share-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Asset Based Consulting Knowledge Share: a static site that publishes an account's Claude skills.",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "prep": "node scripts/prep.mjs",
+    "predev": "npm run prep",
+    "dev": "astro dev",
+    "prebuild": "npm run prep",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check:account": "node scripts/check-account.mjs",
+    "check:genericity": "node scripts/check-genericity.mjs",
+    "check:confidentiality": "node scripts/check-confidentiality.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "check:types": "astro check",
+    "test": "node --test \"tests/*.test.mjs\"",
+    "build:ci": "npm run prep && npm run check:account && npm run check:genericity && npm run check:confidentiality && npm run check:types && astro build && npm run check:links && npm run check:confidentiality -- --dist",
+    "make-template": "node scripts/make-template.mjs"
+  },
+  "dependencies": {
+    "@astrojs/preact": "^6.1.1",
+    "@carbon/colors": "^11.61.0",
+    "@carbon/motion": "^11.55.0",
+    "@carbon/themes": "^11.84.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "astro": "^7.4.4",
+    "astro-pagefind": "^2.0.1",
+    "diff": "^9.0.0",
+    "fflate": "^0.8.3",
+    "preact": "^11.1.1",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "typescript": "^6.0.3"
+  }
+}

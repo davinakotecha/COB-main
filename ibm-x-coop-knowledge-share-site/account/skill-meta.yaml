@@ -1,0 +1,23 @@
+# Per-skill overlay. The skills themselves are read from skills/; only the plain-language
+# framing lives here. A skill with no entry still appears, under "Unsorted", with a build warning.
+skills:
+  diff-summariser:
+    workstream: Conversational AI delivery
+    tagline: Turn a Genesys Architect flow change into a plain-English summary.
+    give: Two flow exports (JSON or Archy YAML), or just a note about what changed.
+    get: A consistent summary for a Jira comment, changelog or slide, plus changes[] JSON.
+    needs: Python 3, plus PyYAML for the Archy YAML path.
+    pairsWith: playback-deck
+    pairsWhy: Its output feeds the "built this iteration" slide in playback-deck.
+    pairsVia: changes[] JSON
+    example: diff-summariser
+  playback-deck:
+    workstream: Conversational AI delivery
+    tagline: Update the fortnightly Iteration Playback deck inside the client's own template.
+    give: The existing .pptx or .potx, what changed, test numbers and next-iteration plans.
+    get: An updated deck on the template's own layouts, swept for leftover placeholders.
+    needs: Works best alongside the pptx skill.
+    pairsWith: diff-summariser
+    pairsWhy: It can build its "built this iteration" slide from diff-summariser output.
+    pairsVia: changes[] JSON
+    example: playback-deck

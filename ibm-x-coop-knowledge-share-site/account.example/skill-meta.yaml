@@ -1,0 +1,17 @@
+# Plain-language framing for each skill. The skills themselves are read from skills/;
+# only the wording shown on the library tiles and skill pages lives here.
+# A skill with no entry still appears, under "Unsorted", and the build prints a warning.
+skills:
+  meeting-summary:
+    # Must be one of the workstreams in account.config.yaml.
+    workstream: Example workstream
+    # One line shown under the skill name.
+    tagline: Turn meeting notes into a short summary with actions.
+    # What the person hands over, what they get back, and what it needs on their machine.
+    give: Your notes from a meeting, pasted in.
+    get: A short summary with decisions and actions, flagging anything the notes do not confirm.
+    needs: Nothing beyond Claude.
+    # Optional: another skill this one works with, why, and what passes between them.
+    # pairsWith: another-skill
+    # pairsWhy: Its output feeds the other skill.
+    # pairsVia: changes[] JSON

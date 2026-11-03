@@ -1,0 +1,45 @@
+---
+import Plate from './Plate.astro';
+import { nav, logos, t, withBase } from '../lib/site';
+import type { NavKey } from '../lib/site';
+
+interface Props {
+  current?: NavKey | null;
+}
+const { current = null } = Astro.props;
+const hasLogos = !!(logos.lead || logos.client);
+---
+
+<header class="mast">
+  <div class="wrap mast-row">
+    <a class:list={['lockup', { solo: !hasLogos }]} href={withBase('/')} aria-label={`${t.siteName}, home`}>
+      <Plate />
+      <span class="site">{t.siteName}</span>
+    </a>
+    <nav aria-label="Main">
+      {
+        nav.map((n) => (
+          <a href={withBase(n.href)} class:list={{ acct: n.account }} aria-current={current === n.key ? 'page' : undefined}>
+            {n.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="tools">
+      <button class="tool" id="search" type="button" aria-label="Search">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+          <path d="M10 10l5 5" stroke="currentColor" stroke-width="1.5"></path>
+        </svg>
+        <span class="lbl">Search</span><kbd id="kbd">Ctrl K</kbd>
+      </button>
+      <button class="tool" id="theme" type="button" aria-pressed="false" aria-label="Dark mode">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+          <path d="M8 2a6 6 0 0 0 0 12z" fill="currentColor"></path>
+        </svg>
+        <span class="lbl">Dark mode</span>
+      </button>
+    </div>
+  </div>
+</header>

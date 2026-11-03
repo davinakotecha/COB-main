@@ -1,0 +1,65 @@
+---
+// The hero: the name, a plain-English line, and a three-panel illustration of the whole idea.
+// Generic content only. It names no project, no client system and no account.
+import TileField from './TileField.astro';
+import { fill, t, withBase } from '../lib/site';
+
+const squares = Array.from({ length: 12 }, (_, k) => k);
+---
+
+<section class="hero g100" aria-labelledby="h-home">
+  <TileField />
+  <div class="wrap">
+    <div class="grid hero-grid">
+      <div class="hero-copy">
+        <h1 id="h-home">{t.siteName}</h1>
+        <p class="lede">
+          {fill('A shared space where {teamPhrase} finds, uses and builds Claude skills: reusable assets that capture how we do a job well.')}
+        </p>
+        <p class="lede2">A skill is a set of written instructions that teaches Claude how the team does one job. Build it once and everyone on the account can use it.</p>
+        <div class="cta">
+          <a class="btn pri" href={withBase('/how-it-works/')}>See how it works</a>
+          <a class="btn sec" href={withBase('/skills/')}>Browse the skills</a>
+        </div>
+      </div>
+
+      <div class="pipeline">
+        <div class="pl" id="pl" role="group" aria-label="How one person's job becomes a skill the whole account reuses">
+          <div class="pl-top">
+            <span>One person's job becomes everyone's tool</span>
+            <button class="replay" id="replay" type="button">Replay</button>
+          </div>
+
+          <div class="panel" id="s1">
+            <div class="panel-h"><span>A job someone does well</span><span>One person</span></div>
+            <div class="st-b">
+              <p class="q">&ldquo;I explain the same job to Claude every week, and it never comes out the same way twice.&rdquo;</p>
+            </div>
+          </div>
+
+          <div class="conn" id="cA"><span class="fill"></span><span class="dot"></span><span class="lab">Write it down once</span></div>
+
+          <div class="panel" id="s2">
+            <div class="panel-h"><span>Written once as a skill</span><span>The skills library</span></div>
+            <div class="st-b">
+              <pre class="tree"><span style="--i:0">a-skill/</span>
+<span style="--i:1">  SKILL.md     <em>when to use it, and how to do the job</em></span>
+<span style="--i:2">  references/  <em>detail Claude reads only if needed</em></span>
+<span style="--i:3">  scripts/     <em>helpers for the exact steps</em></span></pre>
+            </div>
+          </div>
+
+          <div class="conn" id="cB"><span class="fill"></span><span class="dot"></span><span class="lab">Share it in the library</span></div>
+
+          <div class="panel" id="s3">
+            <div class="panel-h"><span>Reused across the account</span><span>Same approach</span></div>
+            <div class="st-b">
+              <div class="sqs" aria-hidden="true">{squares.map((k) => <i style={`--k:${k}`} />)}</div>
+              <p class="cap">Each square is a teammate who adds the skill. Illustration only.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

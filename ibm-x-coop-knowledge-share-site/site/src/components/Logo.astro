@@ -1,0 +1,24 @@
+---
+// One logo, from the account's brand folder. Never recoloured or redrawn.
+// Light surfaces get the full-colour file. Dark surfaces get the reversed file when there is one,
+// otherwise the full-colour file on a small white tile (see .logo rules in global.css).
+import type { Logo } from '../lib/site';
+import { isDev } from '../lib/site';
+
+interface Props {
+  logo: Logo;
+  class?: string;
+}
+const { logo, class: className } = Astro.props;
+---
+
+{
+  logo.missing && isDev ? (
+    <span class="phlogo">Missing logo: {logo.name}</span>
+  ) : (
+    <span class:list={['logo', className]} data-rev={logo.reversed ? '' : undefined}>
+      <img class="full" src={logo.full} alt={logo.name} decoding="async" />
+      {logo.reversed && <img class="rev" src={logo.reversed} alt={logo.name} decoding="async" />}
+    </span>
+  )
+}
