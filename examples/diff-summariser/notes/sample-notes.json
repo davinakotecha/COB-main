@@ -1,0 +1,17 @@
+{
+  "source": "notes",
+  "confidence": "best_effort",
+  "generated_at": "2026-10-22T15:03:46Z",
+  "changes": [
+    {
+      "category": "added",
+      "flow": "Northwind Bank - Card Replacement - Inbound Call",
+      "kind": "action_added",
+      "summary": "Added a check for an in-progress replacement card request, so the flow reports its status instead of issuing a duplicate. (from notes, not verified against a flow export)",
+      "journey": "Card Replacement",
+      "task": "Collect Account Number",
+      "confidence": "best_effort"
+    }
+  ],
+  "flow": "Northwind Bank - Card Replacement - Inbound Call"
+}

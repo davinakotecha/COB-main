@@ -1,0 +1,27 @@
+inboundCall:
+  name: Northwind Bank - Card Replacement
+  defaultLanguage: en-us
+  startUpRef: ./flow.yaml#/menus/menu[mainMenu]
+  menus:
+    - menu:
+        name: Main Menu
+        refId: mainMenu
+        choices:
+          - menuChoice:
+              dtmf: "9"
+              name: Card Replacement
+              targetRef: ./flow.yaml#/tasks/task[collectAccountNumber]
+  tasks:
+    - task:
+        name: Collect Account Number
+        refId: collectAccountNumber
+        actions:
+          - ref: ./common-fragment.yaml#/common/tasks/task[sharedGreeting]/actions
+          - callData:
+              name: Validate Sort Code
+              refId: validateSortCode
+              target: ValidateSortCode
+          - transferToGroup:
+              name: Transfer to Fraud Team
+              refId: transferFraudTeam
+              target: FraudTeamQueue

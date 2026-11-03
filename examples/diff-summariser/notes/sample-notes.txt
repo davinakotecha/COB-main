@@ -1,0 +1,13 @@
+From: Priya (flow builder), in a Slack DM, 2026-10-14
+
+"Quick one for the Card Replacement flow — in Collect Account Number I've
+added a check for whether the customer already has a replacement card
+in progress, so we don't double-issue. If there's already one in flight
+we just tell them the status instead of starting a new request. Didn't
+touch anything else in that task. No export handy right now, I'm still
+on the sandbox org and the CLI export's playing up — can you turn this
+into a ticket comment?"
+
+No before/after export available for this one -- summarised from the note
+above via the notes-only path. See README.md in this directory for the
+exact command and resulting output.
