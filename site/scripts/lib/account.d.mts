@@ -16,6 +16,7 @@ export interface AccountConfig {
   accentColour: string;
   logos: LogoFiles;
   repoUrl: string;
+  siteRepoUrl?: string | null;
   workstreams: string[];
   ticketPrefix: string;
   fictionalName: string;
@@ -47,6 +48,7 @@ export const repoRoot: string;
 export const REQUIRED_FIELDS: string[];
 export const BRAND_MODES: BrandMode[];
 export function accountDir(): string;
+export function skillsRepoRoot(): string;
 export function skillsDir(): string;
 export function examplesDir(): string;
 export function loadAccount(dir?: string): Account;

@@ -54,9 +54,14 @@ export function withBase(p: string): string {
 }
 
 // ---------- repo links ----------
-export const repoUrl = config.repoUrl.replace(/\/+$/, '').replace(/\.git$/, '');
+const clean = (u: string) => u.replace(/\/+$/, '').replace(/\.git$/, '');
+/** The skills repository: install commands, "View on GitHub" and file links point here. */
+export const repoUrl = clean(config.repoUrl);
 export const repoName = parseRepo(config.repoUrl)?.repo ?? 'skills-repo';
-export const issueUrl = `${repoUrl}/issues/new?template=skill-idea.yml&labels=skill-idea`;
+/** The repository that holds this site. It is the skills repository unless siteRepoUrl is set. */
+export const siteRepoUrl = clean(config.siteRepoUrl || config.repoUrl);
+/** "Propose a skill" opens an issue form, and the form lives in the site repository's .github folder. */
+export const issueUrl = `${siteRepoUrl}/issues/new?template=skill-idea.yml&labels=skill-idea`;
 
 // ---------- brand ----------
 /** The accent marks account pages only, and only in account mode. Otherwise it is IBM blue. */

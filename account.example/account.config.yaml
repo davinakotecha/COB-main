@@ -40,9 +40,15 @@ logos:
   client: brand/client.svg
   clientReversed: null
 
-# Your skills repository. Install commands, "View on GitHub" and the "Propose a skill" form are built from it.
-# The site address is derived from it too: https://<owner>.github.io/<repo>/
+# Your skills repository. Install commands and "View on GitHub" are built from it.
+# If the site lives in the same repository, the site address is derived from it too:
+# https://<owner>.github.io/<repo>/
 repoUrl: https://github.com/your-organisation/your-skills-repo
+
+# OPTIONAL. Only if the site code lives in a DIFFERENT repository from the skills. This is the site's
+# repository: it sets the site address (https://<owner>.github.io/<site-repo>/), and it receives "Propose a
+# skill" issues. The build then checks out repoUrl to read the skills. Delete this line if there is one repo.
+# siteRepoUrl: https://github.com/your-organisation/your-site-repo
 
 # Your workstreams, in the order they should appear in the Skills library filter.
 # Every skill in skill-meta.yaml must use one of these names.

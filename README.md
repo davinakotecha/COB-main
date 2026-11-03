@@ -1,67 +1,57 @@
-# COB-skills
+# IBM x The Co-operative Bank: Asset Based Consulting Knowledge Share (site)
 
-Claude Skills for a Genesys Cloud Architect conversational-AI delivery
-engagement: turning repetitive deck-building and change-documentation work
-into a repeatable, reviewable process.
+The website for the Asset Based Consulting Knowledge Share: a shared space where the IBM consulting team
+working with The Co-operative Bank finds, uses and builds Claude skills.
 
-> **⚠️ This repo is public.** It must never contain real client data — no real
-> flow exports, real Archy YAML, real deck content, real ticket keys, or real
-> names. Everything in [`examples/`](examples/) uses the invented "Northwind
-> Bank" universe. Real, client-specific files belong in `local/`, which is
-> gitignored — see [`.gitignore`](.gitignore) and [`CLAUDE.md`](CLAUDE.md) for
-> the full rule.
+**Live site:** https://davinakotecha.github.io/COB-main/ (once GitHub Pages is switched on)
 
-**Website:** these skills are published as a browsable, searchable site at
-https://davinakotecha.github.io/COB-skills/ once GitHub Pages is switched on.
-The site's code is in [`site/`](site/), configured by [`account/`](account/).
-To build a version for another account, see
+> **This repo holds the website only.** The skills live in a separate repository,
+> [`davinakotecha/COB-skills`](https://github.com/davinakotecha/COB-skills). The build checks that repository
+> out and publishes what it finds. This repo may be public: never commit real client data, real flow exports,
+> real ticket keys or real names.
+
+## How the two repositories fit together
+
+| Repository | Holds |
+|---|---|
+| `COB-skills` | `skills/` and `examples/`: the skills themselves and their made-up samples |
+| `COB-main` (this one) | `site/` (generic Astro code), `account/` (names, logos, accent colour, roadmap), `docs/` and the GitHub Actions workflow |
+
+`account/account.config.yaml` names both: `repoUrl` is the skills repository and `siteRepoUrl` is this one.
+The site address comes from `siteRepoUrl`. Install commands and "View on GitHub" point at the skills repository.
+
+## Publish it
+
+1. **Settings > Pages**: set **Source** to **GitHub Actions**.
+2. **Settings > Secrets and variables > Actions > Variables**: add `DEPLOY_PAGES` with the value `true`.
+3. **Actions > Site > Run workflow** on `main`.
+
+New skills do not rebuild the site on their own. After a skill is merged in `COB-skills`, run
+**Actions > Site > Run workflow** here. To automate it, see "One repository or two" in
 [`docs/ADD-AN-ACCOUNT.md`](docs/ADD-AN-ACCOUNT.md).
 
-## Skills
+## Run it locally
 
-| Skill | Purpose |
-|---|---|
-| [`skills/playback-deck`](skills/playback-deck/SKILL.md) | Build/update a fortnightly Iteration Playback PowerPoint by editing the client's existing branded template — not a from-scratch deck build. |
-| [`skills/diff-summariser`](skills/diff-summariser/SKILL.md) | Turn a Genesys Architect flow change (JSON export diff, Archy YAML diff, or freeform notes) into a plain-English, consistently-structured summary for a Jira comment, a changelog, or `playback-deck` slide content. |
-
-The two are designed to compose: `diff-summariser`'s structured output is one
-of the accepted inputs to `playback-deck`'s "built this iteration" slide. See
-[`CLAUDE.md`](CLAUDE.md) for the exact contract between them.
-
-## Install
-
-Copy (or symlink) whichever skill directories you want into your Claude Skills
-directory, e.g.:
+You need Node 22.23.4 or later and Python 3 with PyYAML (`pip install pyyaml`). Clone both repositories side by
+side, then point the site at the skills checkout:
 
 ```bash
-cp -r skills/playback-deck skills/diff-summariser ~/.claude/skills/
+git clone https://github.com/davinakotecha/COB-skills.git
+git clone https://github.com/davinakotecha/COB-main.git
+cd COB-main/site
+echo "SKILLS_REPO_ROOT=../../COB-skills" > .env
+npm install
+npm run dev
 ```
 
-Each skill is self-contained — `diff-summariser` has no dependency on
-`playback-deck` or vice versa. `playback-deck` works better alongside
-Anthropic's `pptx` skill when it's available in your environment, but ships
-its own fallback (`skills/playback-deck/references/pptx-editing-fallback.md`)
-for when it isn't.
+| Command (from `site/`) | What it does |
+|---|---|
+| `npm run dev` | Start the site locally |
+| `npm run build:ci` | Everything CI runs: checks, type check, build, link check |
+| `npm run check:account` | Validate the `account/` folder |
+| `npm run check:confidentiality` | Look for ticket-style keys and e-mail addresses in both repositories |
+| `npm test` | Run the unit tests |
 
-## Repo layout
+## Licence
 
-```
-COB-skills/
-├── skills/
-│   ├── playback-deck/      # SKILL.md + scripts/ + references/
-│   └── diff-summariser/    # SKILL.md + scripts/ + references/
-├── examples/                # fictional fixtures proving both skills work
-├── site/                    # the website (generic Astro core)
-├── account/                 # everything specific to this account: names, logos, roadmap
-├── docs/                    # how to set up the site for another account
-├── local/                   # gitignored — real client files go here
-├── CLAUDE.md
-└── .gitignore
-```
-
-## License / ownership
-
-This repo currently carries no explicit open-source license — all rights
-reserved by default pending a decision on whether to make it permissively
-licensed. Treat the skills' content as internal IBM/author material unless
-and until that's changed explicitly.
+No open-source licence has been granted. Treat the skills as internal IBM and author material.

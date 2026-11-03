@@ -36,8 +36,13 @@ logos:
   client: brand/client.svg
   clientReversed: null
 
-# Install commands, "View on GitHub" and the issue form are built from this.
+# The repository that holds the SKILLS. Install commands and "View on GitHub" are built from this.
 repoUrl: https://github.com/davinakotecha/COB-skills
+
+# The repository that holds this SITE (the code, the workflow, GitHub Pages). It sets the site address,
+# https://davinakotecha.github.io/COB-main/, and receives "Propose a skill" issues. The build checks out
+# repoUrl for the skills when the two differ. Leave this out if skills and site share one repository.
+siteRepoUrl: https://github.com/davinakotecha/COB-main
 
 # TO CONFIRM: "Conversational AI delivery" is a placeholder. Replace with the account's real names.
 workstreams:

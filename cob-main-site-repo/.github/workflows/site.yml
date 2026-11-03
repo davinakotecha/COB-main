@@ -1,0 +1,79 @@
+name: Site
+
+on:
+  push:
+    branches: [main]
+    paths: ['site/**', 'account/**', 'skills/**', 'examples/**', 'README.md', '.github/workflows/site.yml', '.github/scripts/**']
+  pull_request:
+    paths: ['site/**', 'account/**', 'skills/**', 'examples/**', 'README.md', '.github/workflows/site.yml', '.github/scripts/**']
+  workflow_dispatch:
+  # When the skills live in a separate repository, a change there does not trigger this workflow.
+  # Re-run it by hand (Actions > Site > Run workflow) after merging a skill, or have the skills repository
+  # send a repository_dispatch event of type "skills-updated" (see docs/ADD-AN-ACCOUNT.md).
+  repository_dispatch:
+    types: [skills-updated]
+
+# Known-good set from the Astro deploy guide. Narrowed per job in the security phase.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # @carbon/* packages ship an optional install-time usage-telemetry script. Switch it off in CI.
+      IBM_TELEMETRY_DISABLED: 'true'
+      # account | ibm-only | neutral. Leave the repository variable PUBLIC_BRAND_MODE unset to use
+      # brandMode from account/account.config.yaml, or set it to change the mode without a commit.
+      PUBLIC_BRAND_MODE: ${{ vars.PUBLIC_BRAND_MODE }}
+      # SITE_URL and SITE_BASE are derived from siteRepoUrl (or repoUrl) in account/account.config.yaml.
+      # Set them here only to override (for example for a custom domain).
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # needed for the "last changed" dates
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+      - run: python -m pip install pyyaml
+      # Is the skills repository a different repository from this one? (account.config.yaml says.)
+      - name: Find the skills repository
+        id: skills
+        run: python .github/scripts/skills_repo.py
+      - name: Check out the skills repository
+        if: steps.skills.outputs.repo != ''
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ steps.skills.outputs.repo }}
+          path: skills-repo
+          fetch-depth: 0
+          # A public skills repository needs no token. For a private one, add a read-only token as the
+          # repository secret SKILLS_REPO_TOKEN.
+          token: ${{ secrets.SKILLS_REPO_TOKEN || github.token }}
+      - uses: withastro/action@v6
+        with:
+          path: site
+          build-cmd: npm run build:ci
+        env:
+          # Empty when the skills are in this repository, so the build reads ./skills and ./examples.
+          SKILLS_REPO_ROOT: ${{ steps.skills.outputs.repo != '' && 'skills-repo' || '' }}
+          # Optional: terms (one per line) that must never appear in tracked files. See site/scripts/check-confidentiality.mjs.
+          DENY_TERMS: ${{ secrets.DENY_TERMS }}
+
+  deploy:
+    # Nothing publishes until the owner enables Pages (Settings > Pages > Source: GitHub Actions)
+    # and sets the repository variable DEPLOY_PAGES to "true".
+    if: github.event_name != 'pull_request' && vars.DEPLOY_PAGES == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

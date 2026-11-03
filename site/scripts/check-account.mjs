@@ -37,6 +37,9 @@ if (c.accentColour) {
 if (c.repoUrl && !parseRepo(c.repoUrl)) {
   fail(`repoUrl "${c.repoUrl}" must look like https://github.com/owner/repo.`);
 }
+if (c.siteRepoUrl && !parseRepo(c.siteRepoUrl)) {
+  fail(`siteRepoUrl "${c.siteRepoUrl}" must look like https://github.com/owner/repo, or be left out when the site and the skills share one repository.`);
+}
 if (c.ticketPrefix !== undefined && String(c.ticketPrefix).trim() === '') {
   fail('ticketPrefix is empty. Choose a made-up prefix of two to ten capital letters for the invented ticket keys in examples.');
 }

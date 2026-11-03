@@ -41,7 +41,8 @@ Open it in any text editor. Every field has a comment. This table says where eac
 | `forbiddenTerms` | System or tool names that must stay out of the generic core (can be empty) | Checks only |
 | `accentColour` | One hex colour, for example `"#009d9a"` | Small squares on account pages |
 | `logos` | File names inside `account/brand/` | Masthead, footer |
-| `repoUrl` | Your repository's address | Install commands, "View on GitHub", the site address |
+| `repoUrl` | The address of the repository that holds your **skills** | Install commands, "View on GitHub", the site address (if there is one repository) |
+| `siteRepoUrl` | Only if the site code is in a **different** repository from the skills | The site address and the "Propose a skill" form |
 | `workstreams` | Your workstreams, in the order for the filter | Library filter, skill tiles |
 | `ticketPrefix` and `fictionalName` | A made-up prefix and company for examples | The generator and the confidentiality check |
 | `contactRoute` | Where to ask for help (optional) | Footer |
@@ -97,6 +98,60 @@ addresses that should not be in the repository. `npm run dev` shows the site on 
 
 Before you do, work through the checklist below.
 
+## One repository or two
+
+By default the site and the skills share one repository, and `repoUrl` is that repository. You can also keep
+the site code in one repository and the skills in another, which suits a team that already has a skills
+repository and does not want website code in it.
+
+For two repositories, put the **skills repository** in `repoUrl` and the **site repository** in `siteRepoUrl`:
+
+```yaml
+repoUrl: https://github.com/your-organisation/your-skills-repo
+siteRepoUrl: https://github.com/your-organisation/your-site-repo
+```
+
+- **Where things go:** the site repository holds `site/`, `account/`, `docs/` and `.github/`. The skills
+  repository holds `skills/` and `examples/` only.
+- **The site address** comes from `siteRepoUrl`: `https://<owner>.github.io/<site-repo>/`. Pages is switched on
+  in the **site** repository, and the repository variable `DEPLOY_PAGES` is set there too.
+- **Install commands and "View on GitHub"** keep pointing at the skills repository, where the skills are.
+- **The workflow** reads `siteRepoUrl` and `repoUrl`, and checks out the skills repository itself on every run.
+  A public skills repository needs nothing else. For a private one, add a read-only token as the repository secret
+  `SKILLS_REPO_TOKEN` in the site repository.
+- **New skills do not rebuild the site on their own.** A change in the skills repository does not trigger the
+  site's workflow. After you merge a skill, run **Actions > Site > Run workflow** in the site repository. To
+  automate it, have the skills repository send a `repository_dispatch` event of type `skills-updated` to the site
+  repository whenever its `main` branch changes. That needs a token with permission to the site repository.
+- **To rebuild automatically**, add this file to the **skills** repository as `.github/workflows/notify-site.yml`,
+  and add a repository secret there called `SITE_REPO_TOKEN`: a fine-grained personal access token that has
+  **Contents: Read and write** on the site repository (GitHub requires that permission to send the event):
+
+  ```yaml
+  name: Tell the site
+  on:
+    push:
+      branches: [main]
+      paths: ['skills/**', 'examples/**']
+  jobs:
+    notify:
+      runs-on: ubuntu-latest
+      steps:
+        - run: |
+            curl -sS -f -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ secrets.SITE_REPO_TOKEN }}" \
+              https://api.github.com/repos/YOUR-OWNER/YOUR-SITE-REPO/dispatches \
+              -d '{"event_type":"skills-updated"}'
+  ```
+
+  Replace `YOUR-OWNER/YOUR-SITE-REPO` with the site repository. Keep the token to that one repository, and never
+  commit it.
+- **Running it locally:** clone both repositories side by side, then in `site/` create a `.env` file (it is
+  git-ignored) containing the path to the skills checkout, for example
+  `SKILLS_REPO_ROOT=../../your-skills-repo`. A relative path is read from the site repository's root.
+- **Checks:** `check:confidentiality` scans both repositories when `SKILLS_REPO_ROOT` is set.
+
 ## Public or private
 
 A GitHub Pages site on a public repository is a public website from its first deploy. Decide before step 7:
@@ -143,4 +198,5 @@ not pushed to you automatically. To take an update, add the template as a second
 | The build says a logo is missing | Add the file to `account/brand/` or fix its name under `logos` |
 | A skill is under "Unsorted" | Add it to `account/skill-meta.yaml` |
 | `check:confidentiality` fails | Open the file and line it names and replace the real value with a made-up one |
-| The site loads but pages 404 on GitHub | Check `repoUrl` matches the repository name exactly |
+| The site loads but looks unstyled, or pages 404 on GitHub | The address is taken from `siteRepoUrl` (or `repoUrl` with one repository). It must match the repository that publishes Pages, character for character, including capitals |
+| The build says it cannot find the skills folder | With two repositories, set `SKILLS_REPO_ROOT` to the skills checkout (locally), or check `repoUrl` is right and readable (in the workflow) |

@@ -18,9 +18,11 @@ for (const v of [c.clientName, c.fullName, c.teamPhrase, c.fictionalName, ...(c.
 // IBM leading is a brand rule, not an account name, so leadBrand is allowed in code but not as copy.
 const skillNames = fs.existsSync(skillsDir()) ? fs.readdirSync(skillsDir(), { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name) : [];
 for (const s of skillNames) forbidden.add(s);
-// The repo name often equals the account's short name.
-const repoName = (c.repoUrl ?? '').split('/').pop();
-if (repoName) forbidden.add(repoName.replace(/\.git$/, ''));
+// The repository names often equal the account's short name (the skills repository and the site repository).
+for (const url of [c.repoUrl, c.siteRepoUrl]) {
+  const name = (url ?? '').split('/').pop();
+  if (name) forbidden.add(name.replace(/\.git$/, ''));
+}
 
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.astro', 'generated']);
 const SKIP_FILES = new Set(['package-lock.json']);

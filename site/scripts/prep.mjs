@@ -5,7 +5,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import YAML from 'yaml';
 import { zipSync, strToU8 } from 'fflate';
-import { loadAccount, brandMode, deriveHosting, repoRoot, siteRoot, skillsDir as getSkillsDir, examplesDir as getExamplesDir } from './lib/account.mjs';
+import { loadAccount, brandMode, deriveHosting, repoRoot, siteRoot, skillsRepoRoot, skillsDir as getSkillsDir, examplesDir as getExamplesDir } from './lib/account.mjs';
 import { ensureDir, rmrf, writeJson, walk, toPosix, lastChanged, gitShortSha } from './lib/files.mjs';
 import { buildTokensCss } from './lib/build-tokens.mjs';
 import { rewriteMarkdown } from './lib/rewrite-markdown.mjs';
@@ -41,7 +41,14 @@ function firstSentence(text) {
 
 const skillsDir = getSkillsDir();
 const examplesDir = getExamplesDir();
-const rel = (p) => toPosix(path.relative(repoRoot, p));
+if (!fs.existsSync(skillsDir)) {
+  throw new Error(
+    `Cannot find the skills folder at ${skillsDir}. If your skills live in a separate repository, check it out next to this one and set SKILLS_REPO_ROOT to its path (see docs/ADD-AN-ACCOUNT.md).`,
+  );
+}
+// Paths shown on the site (GitHub links, "last changed") are relative to the repository that holds the skills.
+const skillsRoot = skillsRepoRoot();
+const rel = (p) => toPosix(path.relative(skillsRoot, p));
 const skills = [];
 for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true })) {
   if (!entry.isDirectory()) continue;
@@ -107,7 +114,7 @@ for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true })) {
     fictionalFiles,
     exampleDir: hasExamples ? rel(path.join(examplesDir, exampleName)) : null,
     skillPath: rel(dir),
-    lastChanged: lastChanged(rel(dir)),
+    lastChanged: lastChanged(rel(dir), skillsRoot),
   });
 }
 skills.sort((a, b) => a.slug.localeCompare(b.slug));
@@ -128,7 +135,9 @@ console.log(`  skill manifest: ${skills.length} skills`);
 const docsOut = path.join(generated, 'skill-docs');
 rmrf(docsOut);
 const { base } = deriveHosting(account.config);
-const rewriteCtx = { repoRoot, repoUrl: account.config.repoUrl.replace(/\/+$/, '').replace(/\.git$/, ''), base };
+// Link rewriting resolves relative links against the repository that holds the skills, which may be a
+// separate checkout from this one (SKILLS_REPO_ROOT).
+const rewriteCtx = { repoRoot: skillsRepoRoot(), repoUrl: account.config.repoUrl.replace(/\/+$/, '').replace(/\.git$/, ''), base };
 let docCount = 0;
 for (const s of skills) {
   const dir = path.join(skillsDir, s.slug);
@@ -147,7 +156,7 @@ const demoScript = path.join(account.dir, 'build-demo-data.mjs');
 let demo = { examples: {} };
 if (fs.existsSync(demoScript)) {
   const mod = await import(pathToFileURL(demoScript).href);
-  demo = await mod.default({ repoRoot, account, skillsDir, examplesDir });
+  demo = await mod.default({ repoRoot: skillsRoot, account, skillsDir, examplesDir });
   console.log(`  demo data: ${Object.keys(demo.examples ?? {}).join(', ') || 'none'}`);
 }
 writeJson(path.join(generated, 'demo.json'), demo);
@@ -169,7 +178,7 @@ for (const s of skills) {
 // Fictional template files, copied into the build output only. The repo's .gitignore blocks .pptx outside examples/.
 for (const s of skills) {
   if (!s.exampleDir) continue;
-  for (const file of walk(path.join(repoRoot, s.exampleDir))) {
+  for (const file of walk(path.join(skillsRoot, s.exampleDir))) {
     if (/\.(pptx|potx)$/i.test(file)) fs.copyFileSync(file, path.join(downloads, path.basename(file)));
   }
 }
@@ -201,7 +210,7 @@ console.log(`  brand: ${fs.readdirSync(brandOut).length} file(s) for mode "${mod
 
 // ---------- 4b. build info, read by the pages (they cannot touch git or the file system themselves) ----------
 writeJson(path.join(generated, 'build-info.json'), {
-  sha: gitShortSha(),
+  sha: gitShortSha(repoRoot),
   date: new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date()),
   brandFiles: fs.readdirSync(brandOut),
 });

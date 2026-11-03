@@ -10,6 +10,17 @@ import YAML from 'yaml';
 export const siteRoot = process.env.SITE_ROOT ? path.resolve(process.env.SITE_ROOT) : process.cwd();
 export const repoRoot = path.resolve(siteRoot, '..');
 
+// site/.env (git-ignored) can set SKILLS_REPO_ROOT, PUBLIC_BRAND_MODE and the like for local work.
+// Variables already set in the environment win, because process.loadEnvFile never overrides them.
+const envFile = path.join(siteRoot, '.env');
+if (fs.existsSync(envFile) && typeof process.loadEnvFile === 'function') {
+  try {
+    process.loadEnvFile(envFile);
+  } catch {
+    /* an unreadable .env is ignored */
+  }
+}
+
 export const REQUIRED_FIELDS = [
   'siteName',
   'fullName',
@@ -32,13 +43,21 @@ const abs = (p) => (path.isAbsolute(p) ? p : path.resolve(repoRoot, p));
 export function accountDir() {
   return abs(process.env.ACCOUNT_DIR || 'account');
 }
-/** Folder that holds the skills. SKILLS_DIR overrides it (the sample folder ships its own). */
-export function skillsDir() {
-  return abs(process.env.SKILLS_DIR || 'skills');
+/**
+ * The repository that holds skills/ and examples/. By default that is this repository.
+ * Set SKILLS_REPO_ROOT to a checkout of a separate skills repository (a relative path is
+ * resolved against this repository's root).
+ */
+export function skillsRepoRoot() {
+  return abs(process.env.SKILLS_REPO_ROOT || '.');
 }
-/** Folder that holds the made-up samples. EXAMPLES_DIR overrides it. */
+/** Folder that holds the skills. SKILLS_DIR overrides it, relative to the skills repository. */
+export function skillsDir() {
+  return path.resolve(skillsRepoRoot(), process.env.SKILLS_DIR || 'skills');
+}
+/** Folder that holds the made-up samples. EXAMPLES_DIR overrides it, relative to the skills repository. */
 export function examplesDir() {
-  return abs(process.env.EXAMPLES_DIR || 'examples');
+  return path.resolve(skillsRepoRoot(), process.env.EXAMPLES_DIR || 'examples');
 }
 
 function readYaml(file, fallback) {
@@ -80,9 +99,12 @@ export function parseRepo(repoUrl) {
   return m ? { owner: m[1], repo: m[2] } : null;
 }
 
-/** SITE_URL and SITE_BASE come from the environment, otherwise from the GitHub repo URL. */
+/**
+ * SITE_URL and SITE_BASE come from the environment, otherwise from the repository that hosts the
+ * site: siteRepoUrl when the skills live in a separate repository, otherwise repoUrl.
+ */
 export function deriveHosting(config) {
-  const parsed = parseRepo(config.repoUrl);
+  const parsed = parseRepo(config.siteRepoUrl || config.repoUrl);
   const siteUrl = process.env.SITE_URL || (parsed ? `https://${parsed.owner.toLowerCase()}.github.io` : 'http://localhost:4321');
   let base = process.env.SITE_BASE ?? (parsed ? `/${parsed.repo}` : '/');
   if (!base.startsWith('/')) base = `/${base}`;

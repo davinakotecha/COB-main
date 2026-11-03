@@ -67,9 +67,10 @@ fs.writeFileSync(path.join(out, '.gitignore'), tpl('gitignore.txt'));
 // ---------- check: no trace of this account in the output ----------
 const c = source.config;
 const repo = parseRepo(c.repoUrl);
+const siteRepo = c.siteRepoUrl ? parseRepo(c.siteRepoUrl) : null;
 const skillNames = fs.existsSync(skillsDir()) ? fs.readdirSync(skillsDir(), { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name) : [];
 const wordTerms = new Set();
-for (const v of [c.clientName, c.fullName, c.teamPhrase, c.fictionalName, ...(c.forbiddenTerms ?? []), ...(c.clientAliases ?? []), ...(c.workstreams ?? []), ...skillNames, repo?.repo, repo?.owner]) {
+for (const v of [c.clientName, c.fullName, c.teamPhrase, c.fictionalName, ...(c.forbiddenTerms ?? []), ...(c.clientAliases ?? []), ...(c.workstreams ?? []), ...skillNames, repo?.repo, repo?.owner, siteRepo?.repo, siteRepo?.owner]) {
   if (v && String(v).trim().length >= 3) wordTerms.add(String(v).trim());
 }
 // The made-up ticket prefix is matched as a key (prefix, hyphen, digits), not as a bare substring.

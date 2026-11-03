@@ -8,7 +8,7 @@
 // On failure it prints the file and line number only, never the matched text: CI logs may be public.
 import fs from 'node:fs';
 import path from 'node:path';
-import { loadAccount, brandMode, repoRoot, siteRoot, accountDir } from './lib/account.mjs';
+import { loadAccount, brandMode, repoRoot, siteRoot, accountDir, skillsRepoRoot } from './lib/account.mjs';
 import { trackedFiles, walk, toPosix, isTextFile } from './lib/files.mjs';
 
 const wantDist = process.argv.includes('--dist');
@@ -77,12 +77,17 @@ const terms = denyTerms();
 const termsAvailable = terms.length > 0;
 
 let scanned = 0;
-for (const rel of trackedFiles(repoRoot)) {
-  if (skip(rel)) continue;
-  const abs = path.join(repoRoot, rel);
-  if (!isTextFile(abs)) continue;
-  scan(rel, fs.readFileSync(abs, 'utf8'), terms, termsAvailable);
-  scanned++;
+// The site repository, and the skills repository too when the skills live in a separate checkout.
+const roots = [{ root: repoRoot, label: '' }];
+if (skillsRepoRoot() !== repoRoot && fs.existsSync(skillsRepoRoot())) roots.push({ root: skillsRepoRoot(), label: '(skills repo) ' });
+for (const { root, label } of roots) {
+  for (const rel of trackedFiles(root)) {
+    if (skip(rel)) continue;
+    const abs = path.join(root, rel);
+    if (!isTextFile(abs)) continue;
+    scan(`${label}${rel}`, fs.readFileSync(abs, 'utf8'), terms, termsAvailable);
+    scanned++;
+  }
 }
 
 // The built site: in ibm-only and neutral modes the client must not appear at all.
