@@ -52,6 +52,8 @@ site/src/styles/tokens.generated.css
 site/public/brand/
 site/public/downloads/
 /template-*/
+# A separate skills repository checked out by the workflow (or locally) for the build
+/skills-repo/
 
 # --- Secrets: never commit these ---
 .env
