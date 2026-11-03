@@ -1,0 +1,58 @@
+name: Site
+
+on:
+  push:
+    branches: [main]
+    paths: ['site/**', 'account/**', 'skills/**', 'examples/**', 'README.md', '.github/workflows/site.yml']
+  pull_request:
+    paths: ['site/**', 'account/**', 'skills/**', 'examples/**', 'README.md', '.github/workflows/site.yml']
+  workflow_dispatch:
+
+# Known-good set from the Astro deploy guide. Narrowed per job in the security phase.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # @carbon/* packages ship an optional install-time usage-telemetry script. Switch it off in CI.
+      IBM_TELEMETRY_DISABLED: 'true'
+      # account | ibm-only | neutral. Leave the repository variable PUBLIC_BRAND_MODE unset to use
+      # brandMode from account/account.config.yaml, or set it to change the mode without a commit.
+      PUBLIC_BRAND_MODE: ${{ vars.PUBLIC_BRAND_MODE }}
+      # SITE_URL and SITE_BASE are derived from repoUrl in account/account.config.yaml.
+      # Set them here only to override (for example for a custom domain).
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # needed for the "last changed" dates
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+      - run: python -m pip install pyyaml
+      - uses: withastro/action@v6
+        with:
+          path: site
+          build-cmd: npm run build:ci
+        env:
+          # Optional: terms (one per line) that must never appear in tracked files. See site/scripts/check-confidentiality.mjs.
+          DENY_TERMS: ${{ secrets.DENY_TERMS }}
+
+  deploy:
+    # Nothing publishes until the owner enables Pages (Settings > Pages > Source: GitHub Actions)
+    # and sets the repository variable DEPLOY_PAGES to "true".
+    if: github.event_name != 'pull_request' && vars.DEPLOY_PAGES == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
