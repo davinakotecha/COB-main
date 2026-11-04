@@ -1,24 +1,26 @@
-# IBM x The Co-operative Bank: Asset Based Consulting Knowledge Share (site)
+# IBM x The Co-operative Bank: Asset Based Consulting Knowledge Share
 
-The website for the Asset Based Consulting Knowledge Share: a shared space where the IBM consulting team
-working with The Co-operative Bank finds, uses and builds Claude skills.
+A shared space where the IBM consulting team working with The Co-operative Bank finds, uses and builds Claude
+skills. This repository holds the skills **and** the website that publishes them.
 
-**Live site:** https://davinakotecha.github.io/COB-main/ (once GitHub Pages is switched on)
+**Live site:** https://davinakotecha.github.io/COB-main/
 
-> **This repo holds the website only.** The skills live in a separate repository,
-> [`davinakotecha/COB-skills`](https://github.com/davinakotecha/COB-skills). The build checks that repository
-> out and publishes what it finds. This repo may be public: never commit real client data, real flow exports,
-> real ticket keys or real names.
+> This repo may be public: never commit real client data, real flow exports, real ticket keys or real names.
+> Everything in `examples/` uses the invented "Northwind Bank" universe.
 
-## How the two repositories fit together
+## What is where
 
-| Repository | Holds |
+| Folder | Holds |
 |---|---|
-| `COB-skills` | `skills/` and `examples/`: the skills themselves and their made-up samples |
-| `COB-main` (this one) | `site/` (generic Astro code), `account/` (names, logos, accent colour, roadmap), `docs/` and the GitHub Actions workflow |
+| `skills/` | The skills themselves. Each skill is a folder with a `SKILL.md`, and often `references/` and `scripts/` |
+| `examples/` | Made-up samples that prove each skill works |
+| `site/` | The website (generic Astro code) |
+| `account/` | Everything specific to this account: names, logos, accent colour, roadmap |
+| `docs/` | How to set the site up for another account |
+| `.github/` | The workflow that builds and publishes the site, and the "Propose a skill" issue form |
 
-`account/account.config.yaml` names both: `repoUrl` is the skills repository and `siteRepoUrl` is this one.
-The site address comes from `siteRepoUrl`. Install commands and "View on GitHub" point at the skills repository.
+`account/account.config.yaml` sets `repoUrl` to this repository. The site address, the install commands, "View on
+GitHub" and the "Propose a skill" form all come from it.
 
 ## Publish it
 
@@ -26,20 +28,29 @@ The site address comes from `siteRepoUrl`. Install commands and "View on GitHub"
 2. **Settings > Secrets and variables > Actions > Variables**: add `DEPLOY_PAGES` with the value `true`.
 3. **Actions > Site > Run workflow** on `main`.
 
-New skills do not rebuild the site on their own. After a skill is merged in `COB-skills`, run
-**Actions > Site > Run workflow** here. To automate it, see "One repository or two" in
-[`docs/ADD-AN-ACCOUNT.md`](docs/ADD-AN-ACCOUNT.md).
+## Adding a skill
+
+Add a folder under `skills/` and made-up samples under `examples/`, then push. A push that touches `skills/`,
+`examples/`, `site/` or `account/` rebuilds and publishes the site.
+
+- A skill carries its site details in its own `SKILL.md`, in a `metadata` block (the generator on the Contribute
+  page writes it, and can check it for you). A skill that is missing them stops the build with a message naming the
+  skill and the field, and the last good site stays live. See [`docs/ADD-AN-ACCOUNT.md`](docs/ADD-AN-ACCOUNT.md).
+- Every six hours the **Site** workflow also checks whether this repository has moved since the live site was built
+  (for example after a commit that matched none of the path filters), and rebuilds once if so. It is a safety net,
+  so most scheduled runs stop at the check. The footer says which commit the site was built from.
+- A scheduled run can be a little late when GitHub is busy. For an instant update use
+  **Actions > Site > Run workflow**.
+- GitHub switches scheduled workflows off in a public repository after 60 days with no repository activity. Any
+  commit to this repository starts the clock again.
 
 ## Run it locally
 
-You need Node 22.23.4 or later and Python 3 with PyYAML (`pip install pyyaml`). Clone both repositories side by
-side, then point the site at the skills checkout:
+You need Node 22.23.4 or later and Python 3 with PyYAML (`pip install pyyaml`).
 
 ```bash
-git clone https://github.com/davinakotecha/COB-skills.git
 git clone https://github.com/davinakotecha/COB-main.git
 cd COB-main/site
-echo "SKILLS_REPO_ROOT=../../COB-skills" > .env
 npm install
 npm run dev
 ```
@@ -49,7 +60,7 @@ npm run dev
 | `npm run dev` | Start the site locally |
 | `npm run build:ci` | Everything CI runs: checks, type check, build, link check |
 | `npm run check:account` | Validate the `account/` folder |
-| `npm run check:confidentiality` | Look for ticket-style keys and e-mail addresses in both repositories |
+| `npm run check:confidentiality` | Look for ticket-style keys and e-mail addresses |
 | `npm test` | Run the unit tests |
 
 ## Licence

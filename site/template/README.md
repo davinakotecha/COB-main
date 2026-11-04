@@ -13,7 +13,7 @@ published on GitHub Pages, with your skills library, roadmap, and a skill genera
 |---|---|---|
 | Home | Why shared skills help, in plain language, with an animated explanation | Yes |
 | How it works | What a skill is, how to use one, how one joins the library | Yes |
-| Contribute | Steps and a skill generator that checks your skill as you type | Yes |
+| Contribute | Steps, a skill generator that checks your skill as you type, and a pointer to Anthropic's skill-creator for drafting and testing | Yes |
 | Skills library and one page per skill | Your skills, with install steps and downloadable zips | No, from your `skills/` |
 | Roadmap | Ideas, in progress, and live skills | No, from your `account/roadmap.yaml` |
 
@@ -23,7 +23,7 @@ Follow **[docs/ADD-AN-ACCOUNT.md](docs/ADD-AN-ACCOUNT.md)**. In short:
 
 1. Click **Use this template** on GitHub to make your own repository.
 2. Edit `account/account.config.yaml` with your names, logos, accent colour and repository link.
-3. Add your skills under `skills/` and a few lines each in `account/skill-meta.yaml`.
+3. Add your skills under `skills/`, each with a `metadata` block in its `SKILL.md` (the generator on the Contribute page writes it).
 4. Turn on GitHub Pages and set the `DEPLOY_PAGES` repository variable to `true`.
 
 ## Run it locally

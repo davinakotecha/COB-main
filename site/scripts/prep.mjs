@@ -6,9 +6,10 @@ import { pathToFileURL } from 'node:url';
 import YAML from 'yaml';
 import { zipSync, strToU8 } from 'fflate';
 import { loadAccount, brandMode, deriveHosting, repoRoot, siteRoot, skillsRepoRoot, skillsDir as getSkillsDir, examplesDir as getExamplesDir } from './lib/account.mjs';
-import { ensureDir, rmrf, writeJson, walk, toPosix, lastChanged, gitShortSha } from './lib/files.mjs';
+import { ensureDir, rmrf, writeJson, walk, toPosix, lastChanged, gitShortSha, gitSha } from './lib/files.mjs';
 import { buildTokensCss } from './lib/build-tokens.mjs';
 import { rewriteMarkdown } from './lib/rewrite-markdown.mjs';
+import { resolveSkillDetails, FIX_HINT } from './lib/skill-details.mjs';
 
 const generated = path.join(siteRoot, 'src', 'generated');
 const publicDir = path.join(siteRoot, 'public');
@@ -50,18 +51,32 @@ if (!fs.existsSync(skillsDir)) {
 const skillsRoot = skillsRepoRoot();
 const rel = (p) => toPosix(path.relative(skillsRoot, p));
 const skills = [];
-for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true })) {
-  if (!entry.isDirectory()) continue;
-  const slug = entry.name;
+// A tile with missing or malformed details must never be published, so in CI (and any production
+// build) a problem fails the build and the last good site stays up. Locally it prints as a warning.
+const strict = !!(process.env.CI && process.env.CI !== 'false') || process.env.NODE_ENV === 'production';
+const detailErrors = [];
+const skillDirs = fs
+  .readdirSync(skillsDir, { withFileTypes: true })
+  .filter((e) => e.isDirectory())
+  .map((e) => e.name);
+const knownSlugs = new Set(skillDirs.filter((slug) => fs.existsSync(path.join(skillsDir, slug, 'SKILL.md'))));
+for (const slug of skillDirs) {
   const dir = path.join(skillsDir, slug);
   const skillFile = path.join(dir, 'SKILL.md');
-  if (!fs.existsSync(skillFile)) {
+  if (!knownSlugs.has(slug)) {
     warn(`skills/${slug} has no SKILL.md, so it is skipped.`);
     continue;
   }
   const { data, body } = parseFrontmatter(fs.readFileSync(skillFile, 'utf8'));
   const overlay = account.skillMeta[slug];
-  if (!overlay) warn(`skills/${slug} has no entry in ${path.basename(account.dir)}/skill-meta.yaml, so it shows under "Unsorted".`);
+  const resolved = resolveSkillDetails(data, overlay, account.config, { knownSlugs });
+  for (const p of resolved.warnings) warn(`skills/${slug}: ${p.message}`);
+  for (const p of resolved.errors) {
+    const message = `skills/${slug}: ${p.message}`;
+    if (strict) detailErrors.push(message);
+    else warn(`${message} (this fails a CI build)`);
+  }
+  const d = resolved.details;
 
   const refDir = path.join(dir, 'references');
   const references = fs.existsSync(refDir)
@@ -98,14 +113,14 @@ for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true })) {
     name: data.name ?? slug,
     title,
     description: String(data.description ?? '').trim(),
-    workstream: overlay?.workstream ?? 'Unsorted',
-    tagline: overlay?.tagline ?? firstSentence(data.description),
-    give: overlay?.give ?? null,
-    get: overlay?.get ?? null,
-    needs: overlay?.needs ?? null,
-    pairsWith: overlay?.pairsWith ?? null,
-    pairsWhy: overlay?.pairsWhy ?? null,
-    pairsVia: overlay?.pairsVia ?? null,
+    workstream: d.workstream ?? 'Unsorted',
+    tagline: d.tagline ?? firstSentence(data.description),
+    give: d.give,
+    get: d.get,
+    needs: d.needs,
+    pairsWith: d.pairsWith,
+    pairsWhy: d.pairsWhy,
+    pairsVia: d.pairsVia,
     example: overlay?.example ?? null,
     status: overlay?.status ?? 'Live',
     references,
@@ -119,14 +134,12 @@ for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true })) {
 }
 skills.sort((a, b) => a.slug.localeCompare(b.slug));
 
-for (const s of skills) {
-  if (s.workstream !== 'Unsorted' && !account.config.workstreams?.includes(s.workstream)) {
-    warn(`skills/${s.slug}: workstream "${s.workstream}" is not listed in account.config.yaml.`);
-  }
-  if (s.pairsWith && !skills.some((o) => o.slug === s.pairsWith)) {
-    warn(`skills/${s.slug}: pairsWith "${s.pairsWith}" is not a skill in skills/.`);
-    s.pairsWith = null;
-  }
+// A skill that is missing details stops a CI build here, naming the skill and the field.
+if (detailErrors.length) {
+  console.error('prep: a skill is missing details the site needs, so nothing was built. The last good site stays up.');
+  for (const m of detailErrors) console.error(`  - ${m}`);
+  console.error(FIX_HINT);
+  process.exit(1);
 }
 writeJson(path.join(generated, 'skills.json'), skills);
 console.log(`  skill manifest: ${skills.length} skills`);
@@ -209,11 +222,20 @@ for (const rel of wanted) {
 console.log(`  brand: ${fs.readdirSync(brandOut).length} file(s) for mode "${mode}"`);
 
 // ---------- 4b. build info, read by the pages (they cannot touch git or the file system themselves) ----------
+// skillsSha is the commit of the repository the skills were read from (the separate skills repository,
+// or this one). The scheduled workflow compares it with the skills repository's head to decide whether a
+// rebuild is needed, using the public /build.json written below.
+const builtAt = new Date();
+const skillsSha = gitSha(skillsRoot);
 writeJson(path.join(generated, 'build-info.json'), {
   sha: gitShortSha(repoRoot),
-  date: new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date()),
+  skillsSha,
+  skillsShaShort: gitShortSha(skillsRoot),
+  date: new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(builtAt),
+  builtAt: builtAt.toISOString(),
   brandFiles: fs.readdirSync(brandOut),
 });
+writeJson(path.join(publicDir, 'build.json'), { skillsSha, builtAt: builtAt.toISOString() });
 
 // ---------- 5. Carbon tokens ----------
 ensureDir(path.join(siteRoot, 'src', 'styles'));

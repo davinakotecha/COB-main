@@ -1,5 +1,8 @@
 // The rules a new skill must follow, as pure functions. Used by the Contribute generator and by tests.
-// No imports and no browser APIs, and only erasable TypeScript, so Node can run it directly.
+// No browser APIs and only erasable TypeScript, so Node can run it directly. The one import is the details
+// rules in scripts/lib/skill-details.mjs, which the build uses too, so a skill made with the generator
+// always passes the build.
+import { DETAIL_KEYS, DETAIL_LIMITS, detailProblems } from '../../scripts/lib/skill-details.mjs';
 
 export type Level = 'ok' | 'warn' | 'bad';
 export interface Check {
@@ -80,6 +83,12 @@ export interface SkillDraft {
   title: string;
   summary: string;
   description: string;
+  /** Site details. They are written into SKILL.md under `metadata` (see scripts/lib/skill-details.mjs). */
+  workstream: string;
+  tagline: string;
+  give: string;
+  get: string;
+  needs: string;
   inputs: string;
   recipe: string;
   outOfScope: string;
@@ -103,9 +112,29 @@ export const titleCase = (name: string) =>
 /** A double-quoted YAML scalar. JSON string syntax is valid YAML, and escapes quotes and newlines. */
 export const yamlQuote = (s: string) => JSON.stringify(s);
 
-/** The frontmatter, with the description double-quoted like the existing skills. */
+const oneLine = (s: string) => s.trim().replace(/\s+/g, ' ');
+
+/**
+ * The frontmatter, with the description double-quoted like the existing skills. The site details go under
+ * `metadata` with a `ks-` prefix: the Agent Skills specification allows that map, and a top-level key of
+ * our own would make Anthropic's skill-creator validator call the skill invalid.
+ */
 export function frontmatter(d: SkillDraft): string {
-  return ['---', `name: ${d.name || 'new-skill'}`, `description: ${yamlQuote(d.description)}`, '---'].join('\n');
+  const meta: [keyof typeof DETAIL_KEYS, string][] = [
+    ['workstream', d.workstream],
+    ['tagline', d.tagline],
+    ['give', d.give],
+    ['get', d.get],
+    ['needs', d.needs],
+  ];
+  const lines = ['---', `name: ${d.name || 'new-skill'}`, `description: ${yamlQuote(d.description)}`, 'metadata:'];
+  for (const [field, value] of meta) {
+    const v = oneLine(value);
+    // "It needs" is optional and left out when empty; the required details are always written, so a gap is visible.
+    if (v || field !== 'needs') lines.push(`  ${DETAIL_KEYS[field]}: ${yamlQuote(v)}`);
+  }
+  lines.push('---');
+  return lines.join('\n');
 }
 
 // Strip a typed list marker ("- ", "* ", "1. ", "2) ") but not a number that is part of the text.
@@ -201,13 +230,43 @@ export function nextSteps(d: SkillDraft): string[] {
   ];
 }
 
+const DETAIL_LABELS = {
+  workstream: 'Workstream',
+  tagline: 'Tagline',
+  give: '"You give it"',
+  get: '"You get"',
+  needs: '"It needs"',
+} as const;
+
+/** The same rules the build applies to a skill's site details, in plain words for the form. */
+export function checkDetails(d: SkillDraft, workstreams: string[]): Check[] {
+  const out: Check[] = [];
+  const values = { workstream: d.workstream, tagline: d.tagline, give: d.give, get: d.get, needs: d.needs };
+  for (const field of ['workstream', 'tagline', 'give', 'get', 'needs'] as const) {
+    const label = DETAIL_LABELS[field];
+    const value = oneLine(values[field]);
+    const found = detailProblems(field, value, workstreams);
+    if (!found.length) {
+      if (value) out.push({ level: 'ok', message: `${label} is filled in.` });
+      continue;
+    }
+    for (const p of found) {
+      if (p.code === 'missing') out.push({ level: 'bad', message: `Fill in ${label}. The site needs it to build the skill's tile and page.` });
+      else if (p.code === 'unknown-workstream') out.push({ level: 'bad', message: 'Pick one of the listed workstreams.' });
+      else if (p.code === 'too-long') out.push({ level: 'warn', message: `${label} is ${p.length} characters. Keep it under ${DETAIL_LIMITS[field as 'tagline']} so the tile stays tidy.` });
+    }
+  }
+  return out;
+}
+
 /** Every check for a draft, in the order they should be shown. */
-export function checkDraft(d: SkillDraft, ticketPrefix: string): Check[] {
+export function checkDraft(d: SkillDraft, ticketPrefix: string, workstreams: string[] = []): Check[] {
   const md = buildSkillMd(d);
-  const everything = [d.name, d.title, d.summary, d.description, d.inputs, d.recipe, d.outOfScope].join('\n');
+  const everything = [d.name, d.title, d.summary, d.description, d.workstream, d.tagline, d.give, d.get, d.needs, d.inputs, d.recipe, d.outOfScope].join('\n');
   return [
     checkName(d.name),
     ...checkDescription(d.description),
+    ...checkDetails(d, workstreams),
     checkBodyLength(md.split('\n').length - 1),
     ...checkConfidential(everything, ticketPrefix),
   ];

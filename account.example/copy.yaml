@@ -1,6 +1,6 @@
 # Optional overrides for a few generic phrases. Delete a key to use the default wording.
 # The data rule on How it works is the one most accounts must replace: ask your account lead for the
-# approved wording. Remove `draft: true` once it has been approved, which hides the "to be confirmed" note.
+# approved wording, and record their approval in CLAUDE.md.
 groundRules:
   data:
     title: Follow the account's data rules
@@ -8,4 +8,3 @@ groundRules:
       A skill is a set of instructions. It is not a different way of handling data.
       Anything you give Claude falls under the same client data rules as any other use of
       AI tools on the account. Ask your lead if you are unsure.
-    draft: true

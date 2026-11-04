@@ -34,7 +34,7 @@ for (const file of walk(siteRoot, (full, e) => e.isDirectory() && SKIP_DIRS.has(
   if (SKIP_FILES.has(base) || !isTextFile(file)) continue;
   // Generated files and the brand folder are build output, not source.
   const rel = toPosix(path.relative(siteRoot, file));
-  if (rel.startsWith('public/brand/') || rel.startsWith('public/downloads/') || rel.endsWith('tokens.generated.css')) continue;
+  if (rel.startsWith('public/brand/') || rel.startsWith('public/downloads/') || rel === 'public/build.json' || rel.endsWith('tokens.generated.css')) continue;
   scanned++;
   const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
   lines.forEach((line, i) => {

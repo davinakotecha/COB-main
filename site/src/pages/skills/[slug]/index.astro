@@ -27,7 +27,7 @@ const exampleHref = skill.exampleDir ? `${repoUrl}/tree/main/${skill.exampleDir}
 const hasPlain = !!(skill.give || skill.get || skill.needs);
 ---
 
-<Base title={skill.name} current="skills" description={skill.tagline}>
+<Base title={skill.name} current="skills" account description={skill.tagline}>
   <PageHead title={skill.name} lede={skill.tagline} account mono>
     <p class="crumb" slot="crumb"><a href={withBase('/skills/')}>Skills library</a> / {skill.name}</p>
   </PageHead>

@@ -1,17 +1,23 @@
-# Plain-language framing for each skill. The skills themselves are read from skills/;
-# only the wording shown on the library tiles and skill pages lives here.
-# A skill with no entry still appears, under "Unsorted", and the build prints a warning.
-skills:
-  meeting-summary:
-    # Must be one of the workstreams in account.config.yaml.
-    workstream: Example workstream
-    # One line shown under the skill name.
-    tagline: Turn meeting notes into a short summary with actions.
-    # What the person hands over, what they get back, and what it needs on their machine.
-    give: Your notes from a meeting, pasted in.
-    get: A short summary with decisions and actions, flagging anything the notes do not confirm.
-    needs: Nothing beyond Claude.
-    # Optional: another skill this one works with, why, and what passes between them.
-    # pairsWith: another-skill
-    # pairsWhy: Its output feeds the other skill.
-    # pairsVia: changes[] JSON
+# OPTIONAL. You can delete this file.
+#
+# A skill states its own site details in its SKILL.md, under `metadata` (see the starter skill in skills/
+# for the block to copy, or use the generator on the Contribute page). The build reads them from there.
+#
+# This file is only an overlay for a skill you cannot or do not want to edit: for each field the build uses
+# the skill's own `metadata` first, then the entry here, then nothing. A skill that ends up without a
+# workstream, tagline, "you give it" or "you get" fails a CI build with a message naming the skill and the
+# field, so an unfinished tile is never published.
+#
+# Besides the fields below, an entry can set `example` (the folder under examples/ to use, when it is not the
+# skill's own name) and `status`.
+skills: {}
+# skills:
+#   some-older-skill:
+#     workstream: Example workstream   # must be one of the workstreams in account.config.yaml
+#     tagline: One line shown under the skill name.
+#     give: What the person hands over.
+#     get: What they get back.
+#     needs: What it needs on their machine.
+#     # pairsWith: another-skill
+#     # pairsWhy: Its output feeds the other skill.
+#     # pairsVia: changes[] JSON

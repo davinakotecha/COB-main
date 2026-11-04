@@ -5,17 +5,21 @@
 # The name shown in the masthead, the hero headline and page titles.
 siteName: Asset Based Consulting Knowledge Share
 
-# The long name used in page titles and the footer, for example "IBM x Your Client: <siteName>".
+# The long name used in the browser-tab titles of the account pages, for example "IBM x Your Client: <siteName>".
+# Other pages use the short siteName in their titles.
 fullName: "IBM x Example Account: Asset Based Consulting Knowledge Share"
 
 # The brand that leads. IBM for IBM Consulting accounts. Its logo always comes first and is never the smaller one.
 leadBrand: IBM
 
-# The client's name, as it should appear in the account chip and the hero line.
+# The client's name. It appears only on the account pages (Skills library, each skill and reference page,
+# and Roadmap), in their chip and browser-tab titles. The pages every account shares do not name the client.
 clientName: Example Account
 
-# How the home page refers to your team. It fills in "A shared space where ... finds, uses and builds Claude skills".
-teamPhrase: the IBM consulting team working with Example Account
+# How the shared pages refer to your team: Home, How it works, the footer and the default page description.
+# It fills in "A shared space where ... finds, uses and builds Claude skills". Do not put the client's name
+# in it: the client belongs in clientName above, which appears on the account pages only.
+teamPhrase: the IBM consulting team
 
 # Project and product words (system names, tool names) that must never appear in the generic core or in
 # the template you export. Checked by `npm run check:genericity`. Leave the list empty if there are none.

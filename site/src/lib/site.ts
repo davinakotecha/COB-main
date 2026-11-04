@@ -104,7 +104,7 @@ for (const l of [logos.lead, logos.client]) {
 }
 
 // ---------- hosting and build info ----------
-export const buildInfo = buildJson as { sha: string | null; date: string };
+export const buildInfo = buildJson as { sha: string | null; skillsSha: string | null; skillsShaShort: string | null; date: string; builtAt: string };
 
 // ---------- navigation ----------
 export type NavKey = 'home' | 'how' | 'skills' | 'roadmap' | 'contribute';
@@ -116,7 +116,11 @@ export const nav: { key: NavKey; label: string; href: string; account: boolean }
   { key: 'contribute', label: 'Contribute', href: '/contribute/', account: false },
 ];
 
-export const pageTitle = (page: string) => `${page} - ${t.fullName}`;
+/**
+ * The browser-tab title. Account pages (Skills library, skill and reference pages, Roadmap) carry the long
+ * name, which names the client. Every other page uses the short site name, so the client is not named there.
+ */
+export const pageTitle = (page: string, account = false) => `${page} - ${account ? t.fullName : t.siteName}`;
 
 export const workstreams = [...(config.workstreams ?? [])];
 export function skillBySlug(slug: string) {

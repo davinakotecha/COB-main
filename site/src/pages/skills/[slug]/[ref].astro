@@ -17,7 +17,7 @@ if (!doc) throw new Error(`skills/${skill.slug}/references/${meta.file} was not 
 const { Content, headings } = await renderDoc(doc);
 ---
 
-<Base title={`${meta.title} - ${skill.name}`} current="skills" description={`Reference for the ${skill.name} skill: ${meta.title}.`}>
+<Base title={`${meta.title} - ${skill.name}`} current="skills" account description={`Reference for the ${skill.name} skill: ${meta.title}.`}>
   <PageHead title={meta.title} account>
     <p class="crumb" slot="crumb">
       <a href={withBase('/skills/')}>Skills library</a> / <a href={withBase(`/skills/${skill.slug}/`)}>{skill.name}</a> / {meta.file}

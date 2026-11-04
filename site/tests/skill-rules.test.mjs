@@ -6,6 +6,8 @@ import {
   checkDescription,
   checkConfidential,
   checkBodyLength,
+  checkDetails,
+  checkDraft,
   foreignTicketKeys,
   buildSkillMd,
   frontmatter,
@@ -18,6 +20,11 @@ const draft = (over = {}) => ({
   title: 'Status update writer',
   summary: 'Writes the weekly status update from notes.',
   description: 'Write the weekly status update. Use when the user asks for a status update.',
+  workstream: 'Alpha stream',
+  tagline: 'Write the weekly status update from notes.',
+  give: 'Workshop notes, pasted in.',
+  get: 'A status update in the standard format.',
+  needs: 'Nothing beyond Claude.',
   inputs: 'Workshop notes',
   recipe: 'Read the notes\nWrite the update',
   outOfScope: 'Anything about people',
@@ -66,7 +73,59 @@ test('body length: warns above 200, errors above 500', () => {
 
 test('SKILL.md: frontmatter double-quotes and escapes the description', () => {
   const fm = frontmatter(draft({ description: 'Say "hi"\nthen go. Use when asked.' }));
-  assert.match(fm, /^---\nname: status-update-writer\ndescription: "Say \\"hi\\"\\nthen go\. Use when asked\."\n---$/);
+  assert.match(fm, /^---\nname: status-update-writer\ndescription: "Say \\"hi\\"\\nthen go\. Use when asked\."\nmetadata:\n/);
+  assert.ok(fm.endsWith('\n---'));
+});
+test('SKILL.md: the site details sit under metadata with the ks- prefix, never at the top level', () => {
+  const fm = frontmatter(draft());
+  assert.equal(
+    fm,
+    [
+      '---',
+      'name: status-update-writer',
+      'description: "Write the weekly status update. Use when the user asks for a status update."',
+      'metadata:',
+      '  ks-workstream: "Alpha stream"',
+      '  ks-tagline: "Write the weekly status update from notes."',
+      '  ks-give: "Workshop notes, pasted in."',
+      '  ks-get: "A status update in the standard format."',
+      '  ks-needs: "Nothing beyond Claude."',
+      '---',
+    ].join('\n'),
+  );
+  // Anthropic's skill-creator validator allows only these top-level keys.
+  const top = fm.split('\n').filter((l) => /^[a-z-]+:/.test(l)).map((l) => l.split(':')[0]);
+  assert.deepEqual(top, ['name', 'description', 'metadata']);
+});
+test('SKILL.md: every detail value is quoted, so a colon or quote cannot break the YAML', () => {
+  const fm = frontmatter(draft({ tagline: 'Turns notes: fast, "clean" and #tidy' }));
+  assert.match(fm, /ks-tagline: "Turns notes: fast, \\"clean\\" and #tidy"/);
+});
+test('SKILL.md: "it needs" is left out when empty, the required details are always written', () => {
+  const fm = frontmatter(draft({ needs: '', get: '' }));
+  assert.ok(!fm.includes('ks-needs'));
+  assert.match(fm, /ks-get: ""/);
+});
+test('SKILL.md: line breaks in a detail are folded into one line', () => {
+  assert.match(frontmatter(draft({ give: 'First line\n  second line' })), /ks-give: "First line second line"/);
+});
+
+test('details checks: a complete draft passes, a missing one is marked Fix, a long tagline only warns', () => {
+  const ws = ['Alpha stream'];
+  assert.ok(checkDetails(draft(), ws).every((c) => c.level === 'ok'));
+  const missing = checkDetails(draft({ get: '   ' }), ws);
+  assert.ok(missing.some((c) => c.level === 'bad' && /You get/.test(c.message)));
+  assert.ok(checkDetails(draft({ workstream: '' }), ws).some((c) => c.level === 'bad'));
+  assert.ok(checkDetails(draft({ workstream: 'Somewhere else' }), ws).some((c) => c.level === 'bad' && /listed workstreams/.test(c.message)));
+  const long = checkDetails(draft({ tagline: 'x'.repeat(130) }), ws);
+  assert.ok(long.some((c) => c.level === 'warn' && /130 characters/.test(c.message)));
+  assert.ok(!long.some((c) => c.level === 'bad'));
+  assert.ok(!checkDetails(draft({ needs: '' }), ws).some((c) => c.level === 'bad'), 'it needs is optional');
+});
+test('details checks: checkDraft blocks a draft with missing details, so the generator cannot produce a skill the build rejects', () => {
+  const ws = ['Alpha stream'];
+  assert.ok(!checkDraft(draft(), 'EXA', ws).some((c) => c.level === 'bad'));
+  assert.ok(checkDraft(draft({ give: '' }), 'EXA', ws).some((c) => c.level === 'bad'));
 });
 test('SKILL.md: keeps a leading number in a step but strips a typed list marker', () => {
   const md = buildSkillMd(draft({ recipe: '- Read the notes\n3 workshops are covered\n2) Write it up' }));

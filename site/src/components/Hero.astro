@@ -4,7 +4,9 @@
 import TileField from './TileField.astro';
 import { fill, t, withBase } from '../lib/site';
 
-const squares = Array.from({ length: 12 }, (_, k) => k);
+// Twelve simple person silhouettes: a head and shoulders, with no face, name or initial. The first is the
+// person from the first panel and is lit already; the others light up one by one (see .ppl in global.css).
+const people = Array.from({ length: 12 }, (_, k) => k);
 ---
 
 <section class="hero g100" aria-labelledby="h-home">
@@ -54,8 +56,18 @@ const squares = Array.from({ length: 12 }, (_, k) => k);
           <div class="panel" id="s3">
             <div class="panel-h"><span>Reused across the account</span><span>Same approach</span></div>
             <div class="st-b">
-              <div class="sqs" aria-hidden="true">{squares.map((k) => <i style={`--k:${k}`} />)}</div>
-              <p class="cap">Each square is a teammate who adds the skill. Illustration only.</p>
+              <div class="ppl" aria-hidden="true">
+                {
+                  people.map((k) => (
+                    <svg class="pp" viewBox="0 0 32 40" focusable="false" style={`--k:${k}`}>
+                      <circle class="pp-head" cx="16" cy="11" r="7" />
+                      <path class="pp-body" d="M3 39c0-9.5 5.6-16 13-16s13 6.5 13 16z" />
+                      <path class="pp-tick" d="M10.5 32.5l4 4 7.5-8.5" pathLength="1" />
+                    </svg>
+                  ))
+                }
+              </div>
+              <p class="cap">Each person who adds the skill. Illustration only.</p>
             </div>
           </div>
         </div>

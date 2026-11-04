@@ -1,6 +1,12 @@
 ---
 name: meeting-summary
 description: "Use whenever the user wants meeting notes turned into a short summary with decisions and actions. Trigger on: pasted meeting notes, phrases like 'summarise this meeting', 'write up the actions', 'what did we decide', or a request for minutes in the team's format. Works from the notes alone, never invents owners or dates, and marks anything the notes do not confirm as unconfirmed."
+metadata:
+  ks-workstream: "Example workstream"
+  ks-tagline: "Turn meeting notes into a short summary with actions."
+  ks-give: "Your notes from a meeting, pasted in."
+  ks-get: "A short summary with decisions and actions, flagging anything the notes do not confirm."
+  ks-needs: "Nothing beyond Claude."
 ---
 
 # Meeting Summary

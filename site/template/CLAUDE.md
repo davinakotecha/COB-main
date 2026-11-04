@@ -32,6 +32,10 @@ data) lives in `account/`. It reads `skills/` at build time; never copy skill co
 - Brand: components never hardcode logos, names or colours; everything comes from `account/`.
   Never redraw, trace, recolour or crop a logo. Use the official files as supplied.
 - The accent colour marks account pages with small squares only: never text, links, buttons or backgrounds.
+- The client's name appears on the account pages only (Skills library, skill and reference pages, Roadmap), as text
+  and in browser-tab titles. Its logo may appear everywhere. `teamPhrase` must not name the client.
+- A skill carries its own site details in `SKILL.md`, under `metadata` (`ks-workstream`, `ks-tagline`, `ks-give`,
+  `ks-get`). In CI a skill missing them fails the build. `account/skill-meta.yaml` is an optional overlay.
 - Animations run once and respect `prefers-reduced-motion`. Nothing makes a third-party request.
 - Examples on the site stay in the invented-company universe.
 - Record the public-or-private decision here: `Visibility decision: <date, who, outcome>`.

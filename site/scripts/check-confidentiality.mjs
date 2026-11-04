@@ -115,6 +115,35 @@ if (wantDist) {
     }
     if (termsAvailable) scan(rel, text, terms, true, file.endsWith('.html'));
   }
+
+  // In account mode the client may be named on the account pages only: the Skills library, each skill and
+  // reference page, and the Roadmap. Everywhere else its name must not appear in the visible text, the page
+  // title or the meta description. Logos and their alt text and aria-labels are not text and are left alone.
+  if (mode === 'account') {
+    const ACCOUNT_AREAS = ['skills/', 'roadmap/'];
+    const hasClient = (s) => clientTerms.some((t) => s.toLowerCase().includes(t.toLowerCase()));
+    // Replace everything that is not visible text with spaces, keeping newlines so line numbers still match.
+    const blank = (m) => m.replace(/[^\r\n]/g, ' ');
+    const TAG = /<(?:[^>"']|"[^"]*"|'[^']*')*>/g;
+    const BLOCK = /<(script|style|noscript|template)\b[\s\S]*?<\/\1\s*>/gi;
+    const META = /<meta\b[^>]*\bname=["']description["'][^>]*>/gi;
+    for (const file of walk(dist, (full, e) => e.isDirectory() && e.name === 'pagefind')) {
+      if (!file.endsWith('.html')) continue;
+      const pageRel = toPosix(path.relative(dist, file));
+      if (ACCOUNT_AREAS.some((a) => pageRel.startsWith(a))) continue;
+      const html = fs.readFileSync(file, 'utf8');
+      const rel = `site/dist/${pageRel}`;
+      const visible = html.replace(BLOCK, blank).replace(TAG, blank).split(/\r?\n/);
+      visible.forEach((line, i) => {
+        if (hasClient(line)) add(rel, i + 1, 'client name in the visible text or title of a page that is not an account page');
+      });
+      html.split(/\r?\n/).forEach((line, i) => {
+        for (const m of line.matchAll(META)) {
+          if (hasClient(m[0].replace(/^[\s\S]*?content=/i, ''))) add(rel, i + 1, 'client name in the meta description of a page that is not an account page');
+        }
+      });
+    }
+  }
 }
 
 if (problems.length) {

@@ -18,9 +18,11 @@ interface Props {
   current?: NavKey | null;
   /** Keep this page out of the search index (the 404 page). */
   noSearch?: boolean;
+  /** An account page: its title carries the long name. Other pages use the short site name. */
+  account?: boolean;
 }
-const { title, description, current = null, noSearch = false } = Astro.props;
-const fullTitle = pageTitle(title);
+const { title, description, current = null, noSearch = false, account = false } = Astro.props;
+const fullTitle = pageTitle(title, account);
 const desc = description ?? `A shared space for ${t.teamPhrase} to find, use and build Claude skills.`;
 ---
 

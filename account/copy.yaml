@@ -1,5 +1,5 @@
 # Optional overrides for a few generic phrases. Leave a key out to use the default wording.
-# TO CONFIRM: the account lead approves the final data rule before the site is shared widely.
+# The account lead's approval of the data rule is recorded in CLAUDE.md ("TO RECORD"), not on the page.
 groundRules:
   data:
     title: Follow the account's data rules
@@ -7,4 +7,3 @@ groundRules:
       A skill is a set of instructions. It is not a different way of handling data.
       Anything you give Claude falls under the same client data rules as any other use of
       AI tools on the account. Ask your lead if you are unsure.
-    draft: true

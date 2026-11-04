@@ -6,7 +6,13 @@ const licence =
   mode === 'neutral'
     ? 'No open-source licence has been granted. Treat the skills as internal material.'
     : `No open-source licence has been granted. Treat the skills as internal ${config.leadBrand} and author material.`;
-const built = buildInfo.sha ? `Built from commit ${buildInfo.sha} on ${buildInfo.date}.` : `Built on ${buildInfo.date}.`;
+// "Skills updated from" is the commit of the repository the skills were read from, which is what the
+// scheduled run compares against. It is the same as the site's own commit when there is only one repository.
+const built = buildInfo.skillsShaShort
+  ? `Skills updated from ${buildInfo.skillsShaShort}, built on ${buildInfo.date}.`
+  : buildInfo.sha
+    ? `Built from commit ${buildInfo.sha} on ${buildInfo.date}.`
+    : `Built on ${buildInfo.date}.`;
 ---
 
 <footer class="g100">

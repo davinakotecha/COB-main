@@ -5,11 +5,13 @@ import { t } from '../lib/site';
 interface Props {
   /** Add the line "This page belongs to this account." after the chip. */
   line?: boolean;
+  /** Text for the chip instead of the account's name. Pages that every account shares use this. */
+  label?: string;
 }
-const { line = false } = Astro.props;
+const { line = false, label } = Astro.props;
 ---
 
 <p class="acctline">
-  <span class="chip"><i class="mk" aria-hidden="true"></i><span>{t.clientName}</span></span>
+  <span class="chip"><i class="mk" aria-hidden="true"></i><span>{label ?? t.clientName}</span></span>
   {line && <span>This page belongs to this account.</span>}
 </p>

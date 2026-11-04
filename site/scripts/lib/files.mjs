@@ -60,6 +60,12 @@ export function gitShortSha(root = repoRoot) {
   return r.status === 0 ? r.stdout.trim() : null;
 }
 
+/** Full commit id of HEAD in a repository, or null without git history. */
+export function gitSha(root = repoRoot) {
+  const r = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' });
+  return r.status === 0 ? r.stdout.trim() : null;
+}
+
 const TEXT_EXT = new Set(['.md', '.mdx', '.json', '.yaml', '.yml', '.txt', '.mjs', '.js', '.ts', '.tsx', '.astro', '.css', '.html', '.svg', '.py', '.toml', '.cfg']);
 export function isTextFile(file) {
   return TEXT_EXT.has(path.extname(file).toLowerCase()) || path.basename(file).startsWith('.');

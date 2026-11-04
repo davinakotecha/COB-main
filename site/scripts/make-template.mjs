@@ -30,6 +30,7 @@ const SITE_SKIP = new Set([
   'src/generated', // rebuilt by prep
   'public/brand', // synced from the account
   'public/downloads', // built zips
+  'public/build.json', // written by prep
   'src/styles/tokens.generated.css', // rebuilt by prep
   'template', // the template's own README and CLAUDE.md live here
 ]);
@@ -70,7 +71,12 @@ const repo = parseRepo(c.repoUrl);
 const siteRepo = c.siteRepoUrl ? parseRepo(c.siteRepoUrl) : null;
 const skillNames = fs.existsSync(skillsDir()) ? fs.readdirSync(skillsDir(), { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name) : [];
 const wordTerms = new Set();
-for (const v of [c.clientName, c.fullName, c.teamPhrase, c.fictionalName, ...(c.forbiddenTerms ?? []), ...(c.clientAliases ?? []), ...(c.workstreams ?? []), ...skillNames, repo?.repo, repo?.owner, siteRepo?.repo, siteRepo?.owner]) {
+// The team phrase is shared wording and must not name the client. When it is exactly what the shipped
+// sample folder says, it is generic and not a trace of this account, so it is left out of the list.
+// Any other phrase is still treated as specific to this account.
+const exampleTeamPhrase = loadAccount(exampleDir).config.teamPhrase;
+const teamPhrase = c.teamPhrase === exampleTeamPhrase ? null : c.teamPhrase;
+for (const v of [c.clientName, c.fullName, teamPhrase, c.fictionalName, ...(c.forbiddenTerms ?? []), ...(c.clientAliases ?? []), ...(c.workstreams ?? []), ...skillNames, repo?.repo, repo?.owner, siteRepo?.repo, siteRepo?.owner]) {
   if (v && String(v).trim().length >= 3) wordTerms.add(String(v).trim());
 }
 // The made-up ticket prefix is matched as a key (prefix, hyphen, digits), not as a bare substring.

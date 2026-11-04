@@ -3,12 +3,13 @@ import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
 import Steps from '../components/Steps.astro';
 import Generator from '../components/Generator';
-import { config, withBase } from '../lib/site';
+import { config, workstreams, withBase } from '../lib/site';
 import { RESERVED_WORDS, NAME_MAX, DESC_MAX, BODY_MAX_LINES } from '../lib/skill-rules';
+import { DETAIL_KEYS } from '../../scripts/lib/skill-details.mjs';
 
 const steps = [
   { title: 'Spot a task you repeat', body: 'If you keep explaining the same job to Claude, it is a good candidate.' },
-  { title: 'Draft it here', body: 'Use the generator below. It checks the name, the description and the made-up-data rule as you type.' },
+  { title: 'Draft it here or with Claude', body: 'Use the generator below, or ask Claude to draft and test it with skill-creator. The generator checks it as you type.' },
   { title: 'Add a made-up example', body: 'Include a small sample with invented names and figures so others can see it work.' },
   { title: 'Share it', body: 'Send it to the maintainers, or suggest the idea on the roadmap first. It is reviewed before it joins the library.' },
 ];
@@ -29,15 +30,54 @@ const steps = [
     </div>
   </section>
 
-  <section class="band" aria-labelledby="h-gen">
+  <section class="band" aria-labelledby="h-ways">
     <div class="wrap">
-      <h2 id="h-gen">Skill generator</h2>
-      <p class="sec-intro">It checks your skill against the house rules as you type. It runs in your browser and sends nothing anywhere.</p>
-      <Generator client:load ticketPrefix={config.ticketPrefix} fictionalName={config.fictionalName} />
+      <h2 id="h-ways">Two ways to draft a skill</h2>
+      <p class="sec-intro">Use either one, or both. Whichever you start with, finish in the generator so the site details are filled in.</p>
+      <div class="ways">
+        <div class="way">
+          <h3>The generator on this page</h3>
+          <p>Fill in the form and it writes <code>SKILL.md</code> for you, checked against the house rules as you type. It runs in your browser and sends nothing anywhere.</p>
+          <p class="dt">Best for a first draft, or when you want the rules checked as you go.</p>
+          <p><a href="#h-gen">Go to the generator</a></p>
+        </div>
+        <div class="way">
+          <h3>Draft and test it with Claude</h3>
+          <p>
+            Anthropic publishes a skill called <strong>skill-creator</strong>. Ask Claude to use it and it will draft the skill, write a few test prompts, run them <em>with and without</em> your skill, show you the results, and help you revise until it works. It can also tune the description so Claude picks the skill up at the right moment.
+          </p>
+          <p class="dt">Best when you want to see whether the skill really changes Claude's answers before you share it.</p>
+          <p class="way-h">In Claude Code</p>
+          <div class="cmd cmd-sm">
+            <pre tabindex="0">/plugin marketplace add anthropics/skills
+/plugin install example-skills@anthropic-agent-skills</pre>
+          </div>
+          <p class="dt">
+            Then ask: <q>Use skill-creator to help me turn this job into a skill.</q> skill-creator is part of the <code>example-skills</code> plugin in <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener noreferrer">Anthropic's skills repository</a>.
+          </p>
+          <p class="way-h">In claude.ai</p>
+          <p class="dt">
+            Anthropic lists the example skills as available on paid plans. Skills need code execution to be switched on, and you turn them on under <strong>Customize &gt; Skills</strong>. The menu wording may differ in the app.
+          </p>
+          <p class="way-h">Try a finished draft day to day</p>
+          <p class="dt">Copy the skill's folder into <code>~/.claude/skills/</code> and type its name with a slash.</p>
+        </div>
+      </div>
+      <p class="body ways-end">
+        <strong>Before you share it,</strong> make sure its <code>SKILL.md</code> has the <code>metadata</code> block the generator below writes: fill in "Details for the Skills library" and copy the result into your file. The site needs <code>{DETAIL_KEYS.workstream}</code>, <code>{DETAIL_KEYS.tagline}</code>, <code>{DETAIL_KEYS.give}</code> and <code>{DETAIL_KEYS.get}</code> to build the skill's tile and page, and it will not publish a skill that is missing them.
+      </p>
     </div>
   </section>
 
-  <section aria-labelledby="h-rules">
+  <section aria-labelledby="h-gen">
+    <div class="wrap">
+      <h2 id="h-gen">Skill generator</h2>
+      <p class="sec-intro">It checks your skill against the house rules as you type. It runs in your browser and sends nothing anywhere.</p>
+      <Generator client:load ticketPrefix={config.ticketPrefix} fictionalName={config.fictionalName} workstreams={workstreams} />
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-rules">
     <div class="wrap">
       <h2 id="h-rules">The rules in full</h2>
       <p class="sec-intro">The generator checks most of these for you. They are here so you can see why.</p>
@@ -72,7 +112,7 @@ examples/a-skill/
     </div>
   </section>
 
-  <section class="band" aria-labelledby="h-idea">
+  <section aria-labelledby="h-idea">
     <div class="wrap">
       <h2 id="h-idea">Not ready to write one?</h2>
       <p class="sec-intro">Suggest the idea on the roadmap, and someone on the team can pick it up.</p>

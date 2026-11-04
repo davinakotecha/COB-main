@@ -2,6 +2,7 @@
 // The rules live in lib/skill-rules.ts so they can be tested without a browser.
 import { useMemo, useState } from 'preact/hooks';
 import { zipSync, strToU8 } from 'fflate';
+import { DETAIL_LIMITS } from '../../scripts/lib/skill-details.mjs';
 import {
   DESC_MAX,
   buildSkillMd,
@@ -21,6 +22,8 @@ import { onTabKey } from '../lib/tabs';
 interface Props {
   ticketPrefix: string;
   fictionalName: string;
+  /** The account's workstreams, in order. A new skill must pick one. */
+  workstreams: string[];
 }
 
 const START: SkillDraft = {
@@ -29,6 +32,11 @@ const START: SkillDraft = {
   summary: "Turns a week of workshop notes into the team's standard status update.",
   description:
     "Write the weekly status update from workshop notes, in the team's standard format. Use when the user asks for a status update, a weekly summary, or to write up their notes. Trigger on mentions of status update, weekly report, or workshop notes.",
+  workstream: '',
+  tagline: "Turn a week of workshop notes into the team's standard status update.",
+  give: 'The workshop notes, pasted in, and the reporting week.',
+  get: 'A status update in the standard format, with anything the notes do not confirm marked as unconfirmed.',
+  needs: 'Nothing beyond Claude.',
   inputs: 'The workshop notes, pasted in\nThe reporting week',
   recipe: 'Read the notes and pick out progress, risks and next steps\nWrite each as one line in the standard format\nMark anything the notes do not confirm as unconfirmed',
   outOfScope: 'Naming owners or dates that are not in the notes',
@@ -38,12 +46,13 @@ const START: SkillDraft = {
 
 type Tab = 'skill' | 'readme' | 'roadmap';
 
-export default function Generator({ ticketPrefix, fictionalName }: Props) {
-  const [d, setD] = useState<SkillDraft>(START);
+export default function Generator({ ticketPrefix, fictionalName, workstreams }: Props) {
+  // Start on the first workstream when there is only one, so the example passes straight away.
+  const [d, setD] = useState<SkillDraft>({ ...START, workstream: workstreams.length === 1 ? (workstreams[0] as string) : '' });
   const [tab, setTab] = useState<Tab>('skill');
   const set = (patch: Partial<SkillDraft>) => setD((prev) => ({ ...prev, ...patch }));
 
-  const checks = useMemo(() => checkDraft(d, ticketPrefix), [d, ticketPrefix]);
+  const checks = useMemo(() => checkDraft(d, ticketPrefix, workstreams), [d, ticketPrefix, workstreams]);
   const md = useMemo(() => buildSkillMd(d), [d]);
   const preview: Record<Tab, string> = { skill: md, readme: readmeRow(d), roadmap: roadmapEntry(d) };
   const blocked = checks.some((c) => c.level === 'bad');
@@ -105,6 +114,41 @@ export default function Generator({ ticketPrefix, fictionalName }: Props) {
           </span>
           <span class="hint">Say what the skill does and when Claude should use it.</span>
         </label>
+        <fieldset class="fld-group">
+          <legend>Details for the Skills library</legend>
+          <p class="hint">These fill the skill's tile and page on the site. They are saved in the skill's own SKILL.md, so the skill arrives complete.</p>
+          <label class="fld">
+            Workstream
+            <select value={d.workstream} onChange={(e) => set({ workstream: (e.target as HTMLSelectElement).value })}>
+              <option value="">Choose a workstream</option>
+              {workstreams.map((w) => (
+                <option key={w} value={w}>
+                  {w}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label class="fld">
+            Tagline
+            <input type="text" value={d.tagline} onInput={(e) => set({ tagline: (e.target as HTMLInputElement).value })} autocomplete="off" />
+            <span class="hint">One line shown under the skill's name. Aim for under {DETAIL_LIMITS.tagline} characters.</span>
+          </label>
+          <label class="fld">
+            You give it
+            <textarea value={d.give} onInput={(e) => set({ give: (e.target as HTMLTextAreaElement).value })} />
+            <span class="hint">What the person hands over.</span>
+          </label>
+          <label class="fld">
+            You get
+            <textarea value={d.get} onInput={(e) => set({ get: (e.target as HTMLTextAreaElement).value })} />
+            <span class="hint">What comes back.</span>
+          </label>
+          <label class="fld">
+            It needs (optional)
+            <input type="text" value={d.needs} onInput={(e) => set({ needs: (e.target as HTMLInputElement).value })} autocomplete="off" />
+            <span class="hint">What it needs on their machine, for example Python 3 or another skill.</span>
+          </label>
+        </fieldset>
         <label class="fld">
           Inputs it accepts (one per line)
           <textarea value={d.inputs} onInput={(e) => set({ inputs: (e.target as HTMLTextAreaElement).value })} />

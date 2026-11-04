@@ -5,7 +5,10 @@ siteName: Asset Based Consulting Knowledge Share
 fullName: "IBM x The Co-operative Bank: Asset Based Consulting Knowledge Share"
 leadBrand: IBM
 clientName: The Co-operative Bank
-teamPhrase: the IBM consulting team working with The Co-operative Bank
+# Used on the pages every account shares (Home, How it works, Contribute, the footer and the default page
+# description), so it must not name the client. The client's name appears only on the account pages:
+# Skills library, each skill and reference page, and Roadmap.
+teamPhrase: the IBM consulting team
 
 # Project and product words (system names, tool names) that must never appear in the generic core or in
 # the exported template. Checked by `npm run check:genericity` and `npm run make-template`.
@@ -36,13 +39,11 @@ logos:
   client: brand/client.svg
   clientReversed: null
 
-# The repository that holds the SKILLS. Install commands and "View on GitHub" are built from this.
-repoUrl: https://github.com/davinakotecha/COB-skills
-
-# The repository that holds this SITE (the code, the workflow, GitHub Pages). It sets the site address,
-# https://davinakotecha.github.io/COB-main/, and receives "Propose a skill" issues. The build checks out
-# repoUrl for the skills when the two differ. Leave this out if skills and site share one repository.
-siteRepoUrl: https://github.com/davinakotecha/COB-main
+# The repository that holds the skills AND the site (one repository). Install commands and "View on GitHub"
+# are built from it, it sets the site address (https://davinakotecha.github.io/COB-main/), and it receives
+# "Propose a skill" issues. The skills are in its skills/ and examples/ folders, so the build needs no
+# second checkout. (The template also supports skills in a separate repository: see docs/ADD-AN-ACCOUNT.md.)
+repoUrl: https://github.com/davinakotecha/COB-main
 
 # TO CONFIRM: "Conversational AI delivery" is a placeholder. Replace with the account's real names.
 workstreams:

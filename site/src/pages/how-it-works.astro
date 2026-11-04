@@ -6,11 +6,10 @@ import WhyShare from '../components/WhyShare.astro';
 import Chat from '../components/Chat.astro';
 import { copy, fill, withBase } from '../lib/site';
 
-// The data rule is the one piece the account lead must approve. An account can replace it in copy.yaml.
+// An account can replace the data rule in copy.yaml.
 const data = copy?.groundRules?.data ?? {
   title: "Follow the account's data rules",
   body: 'A skill is a set of instructions. It is not a different way of handling data. Anything you give Claude falls under the same client data rules as any other use of AI tools on the account. Ask your lead if you are unsure.',
-  draft: true,
 };
 
 const rules = [
@@ -18,7 +17,7 @@ const rules = [
     title: 'Examples use made-up data',
     body: 'Every example in the library uses made-up names and figures. Real client files, names and ticket numbers never go into the shared library.',
   },
-  { title: data.title, body: data.body, draft: !!data.draft },
+  { title: data.title, body: data.body },
   {
     title: 'Check the work',
     body: "Review what Claude produces before you rely on it, as you would a colleague's work. Skills flag what they could not check.",
@@ -128,10 +127,7 @@ const join = [
           rules.map((r) => (
             <li>
               <h3>{r.title}</h3>
-              <p>
-                {r.body}
-                {r.draft && <em class="draft">Wording to be confirmed with the account lead</em>}
-              </p>
+              <p>{r.body}</p>
             </li>
           ))
         }
