@@ -1,12 +1,19 @@
 ---
 // The logo lockup: lead brand first, a thin rule, then the client. IBM leads and is never smaller.
+// When any logo has no official reversed (white) file, the whole lockup sits on one white plate on dark
+// surfaces (see .plate[data-tile] in global.css). One plate behind both logos looks like a single mark;
+// a box per logo does not. Logos are never recoloured, redrawn or cropped. Official reversed files
+// removed the need for the plate: add them to the account config and `data-tile` disappears.
 import Logo from './Logo.astro';
 import { logos } from '../lib/site';
+
+const shown = [logos.lead, logos.client].filter((l): l is NonNullable<typeof l> => !!l);
+const needsTile = shown.some((l) => !l.reversed);
 ---
 
 {
-  (logos.lead || logos.client) && (
-    <span class="plate">
+  shown.length > 0 && (
+    <span class="plate" data-tile={needsTile ? '' : undefined}>
       {logos.lead && <Logo logo={logos.lead} class="logo-lead" />}
       {logos.lead && logos.client && <span class="psep" aria-hidden="true" />}
       {logos.client && <Logo logo={logos.client} class="logo-client" />}

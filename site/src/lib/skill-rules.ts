@@ -1,4 +1,4 @@
-// The rules a new skill must follow, as pure functions. Used by the Contribute generator and by tests.
+// The rules a new skill must follow, as pure functions. Used by the Share generator and by tests.
 // No browser APIs and only erasable TypeScript, so Node can run it directly. The one import is the details
 // rules in scripts/lib/skill-details.mjs, which the build uses too, so a skill made with the generator
 // always passes the build.
@@ -41,7 +41,7 @@ export function checkDescription(desc: string): Check[] {
   else if (hasXmlTag(desc)) out.push({ level: 'bad', message: 'Descriptions can’t contain XML tags. Remove anything in angle brackets.' });
   else out.push({ level: 'ok', message: `The description is ${n} characters.` });
   if (n > 0 && !/use when|use whenever|trigger on|use this when|use it when/i.test(desc)) {
-    out.push({ level: 'warn', message: 'Say when Claude should use it, for example "Use when the user asks for...".' });
+    out.push({ level: 'warn', message: 'Say when the coding agent should use it, for example "Use when the user asks for...".' });
   }
   return out;
 }
@@ -201,7 +201,7 @@ export function zipFiles(d: SkillDraft): Record<string, string> {
   const files: Record<string, string> = { [`skills/${nm}/SKILL.md`]: buildSkillMd(d) };
   if (d.references) {
     files[`skills/${nm}/references/README.md`] =
-      '# References\n\nDetail Claude reads only when the job needs it. Link each file from SKILL.md.\n';
+      '# References\n\nDetail the coding agent reads only when the job needs it. Link each file from SKILL.md.\n';
   }
   if (d.scripts) {
     files[`skills/${nm}/scripts/README.md`] =
@@ -221,17 +221,16 @@ export function roadmapEntry(d: SkillDraft): string {
 export function nextSteps(d: SkillDraft): string[] {
   const nm = d.name || 'new-skill';
   return [
-    `Make a branch: \`git switch -c skill/${nm}\``,
-    `Add the folder under \`skills/${nm}/\` and made-up samples under \`examples/${nm}/\`.`,
-    'Add a row to the skills table in `README.md`.',
-    'Commit with a sign-off: `git commit -s`',
-    'Push the branch and open a pull request (collaborators only).',
-    `Try it: copy the folder into \`~/.claude/skills/\` and type \`/${nm}\`.`,
+    `Unzip the download and open \`skills/${nm}/SKILL.md\` to add anything the form left out.`,
+    `Put made-up samples in \`examples/${nm}/\`.`,
+    `Try it: copy \`skills/${nm}\` into your coding agent's skills folder (the table on Get started lists them) and ask for the job.`,
+    'Go through the author checklist below.',
+    'Zip the `skills` and `examples` folders again and attach the zip to the submission form.',
   ];
 }
 
 const DETAIL_LABELS = {
-  workstream: 'Workstream',
+  workstream: 'Team',
   tagline: 'Tagline',
   give: '"You give it"',
   get: '"You get"',
@@ -252,7 +251,7 @@ export function checkDetails(d: SkillDraft, workstreams: string[]): Check[] {
     }
     for (const p of found) {
       if (p.code === 'missing') out.push({ level: 'bad', message: `Fill in ${label}. The site needs it to build the skill's tile and page.` });
-      else if (p.code === 'unknown-workstream') out.push({ level: 'bad', message: 'Pick one of the listed workstreams.' });
+      else if (p.code === 'unknown-workstream') out.push({ level: 'bad', message: 'Pick one of the listed teams.' });
       else if (p.code === 'too-long') out.push({ level: 'warn', message: `${label} is ${p.length} characters. Keep it under ${DETAIL_LIMITS[field as 'tagline']} so the tile stays tidy.` });
     }
   }

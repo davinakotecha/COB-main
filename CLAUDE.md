@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This repo holds the Claude skills for the Asset Based Consulting Knowledge Share (`skills/` and `examples/`) and
+This repo holds the skills for the Asset Exchange (`skills/` and `examples/`) and
 the **website** that publishes them (`site/`, configured by `account/`). It is one repository: the build reads the
 skills from `skills/` here. (An older separate repository, `davinakotecha/COB-skills`, is a stale duplicate and is
 not read by the build.) Apart from `site/`, this repo holds no application code.
@@ -34,11 +34,17 @@ time; never copy skill content into `site/`.
   repo; the account lead's written approval for showing the client name and logo on a public page is still to be
   confirmed.
 - Data-rule approval: `TO RECORD: <date, who, outcome>`. The wording of "Follow the account's data rules" on
-  How it works has not yet been approved by the account lead. The on-page "to be confirmed" note was removed on
+  Get started has not yet been approved by the account lead. The on-page "to be confirmed" note was removed on
   3 Nov 2026, so this line is now the only record that the approval is outstanding.
-- The client's name appears on the account pages only (Skills library, skill and reference pages, Roadmap), as
-  text and in browser-tab titles. Its logo may appear everywhere. `teamPhrase` must not name the client.
+- The client's name appears on the account pages only (the Library, skill and reference pages, Roadmap), as
+  text and in browser-tab titles. Security, Share, Get started and the placeholder pages are not account pages. Its logo may appear everywhere. `teamPhrase` must not name the client.
   `npm run check:confidentiality -- --dist` enforces it.
+- The site is tool-neutral: it says "coding agent". A specific tool is named only where the reader needs it (the
+  per-tool setup in `site/src/lib/tools.ts`, and a tip labelled as one option). Each fact lives on one page and the
+  others link to it.
+- Security: the Security page states only controls that exist. Anything proposed or not yet decided is marked "to be
+  confirmed with security". Open items: required reviewers, secret scanning in the build, the approved coding
+  agents, licence and ownership, and the route for reporting a problem. `TO RECORD: <date, who, outcome>`.
 - A skill carries its own site details in `SKILL.md`, under `metadata` (`ks-workstream`, `ks-tagline`,
   `ks-give`, `ks-get`). In CI a skill missing them fails the build.
 - Run `npm run check:genericity` and `npm run check:confidentiality` (from `site/`) before every commit that

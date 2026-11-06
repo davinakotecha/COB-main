@@ -17,7 +17,7 @@ const fromSeeds = (status: string): Card[] =>
   roadmapSeeds.filter((r) => r.status === status).map((r) => ({ title: r.title, summary: r.summary, tag: tagFor(r.skill) }));
 
 const columns: { title: string; cards: Card[]; empty: string }[] = [
-  { title: 'Ideas', cards: fromSeeds('idea'), empty: 'No ideas yet. Propose a skill to start the list.' },
+  { title: 'Ideas', cards: fromSeeds('idea'), empty: 'No ideas yet. Suggest one to start the list.' },
   { title: 'In progress', cards: fromSeeds('in-progress'), empty: 'Nothing in progress. Pick an idea and open an issue to claim it.' },
   {
     title: 'Live',
@@ -27,8 +27,8 @@ const columns: { title: string; cards: Card[]; empty: string }[] = [
 ];
 ---
 
-<Base title="Roadmap" current="roadmap" account description="Skills the team has asked for, the ones being built, and the ones already live.">
-  <PageHead title="Roadmap" account lede="Skills the team has asked for, the ones being built, and the ones already live." />
+<Base title="Roadmap" current="roadmap" account description="Skills people have asked for, the ones being built, and the ones already live.">
+  <PageHead title="Roadmap" account lede="Skills people have asked for, the ones being built, and the ones already live." />
 
   <section>
     <div class="wrap">
@@ -66,10 +66,10 @@ const columns: { title: string; cards: Card[]; empty: string }[] = [
         }
       </div>
       <div class="road-act">
-        <a class="btn pri" href={issueUrl} target="_blank" rel="noopener noreferrer">Propose a skill</a>
-        <a class="btn sec" href={withBase('/contribute/')}>How to add a skill</a>
+        <a class="btn pri" href={issueUrl} target="_blank" rel="noopener noreferrer">Suggest an idea</a>
+        <a class="btn sec" href={withBase('/share/')}>Share a finished skill</a>
       </div>
-      <p class="note">Propose a skill opens a pre-filled issue on GitHub in a new tab. You need a GitHub account to submit it. Do not include client data.</p>
+      <p class="note">Suggest an idea opens a form on GitHub in a new tab. You need a GitHub account to use it. Do not include client data.</p>
     </div>
   </section>
 </Base>

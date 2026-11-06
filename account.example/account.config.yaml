@@ -1,23 +1,23 @@
-# Account configuration for the Asset Based Consulting Knowledge Share site.
+# Account configuration for the Asset Exchange site.
 # Copy this folder to `account/` (make-template does it for you) and fill in your own values.
 # Every field below is explained in docs/ADD-AN-ACCOUNT.md. Run `npm run check:account` to validate it.
 
 # The name shown in the masthead, the hero headline and page titles.
-siteName: Asset Based Consulting Knowledge Share
+siteName: Asset Exchange
 
 # The long name used in the browser-tab titles of the account pages, for example "IBM x Your Client: <siteName>".
 # Other pages use the short siteName in their titles.
-fullName: "IBM x Example Account: Asset Based Consulting Knowledge Share"
+fullName: "IBM x Example Account: Asset Exchange"
 
 # The brand that leads. IBM for IBM Consulting accounts. Its logo always comes first and is never the smaller one.
 leadBrand: IBM
 
-# The client's name. It appears only on the account pages (Skills library, each skill and reference page,
+# The client's name. It appears only on the account pages (the Library, each skill and reference page,
 # and Roadmap), in their chip and browser-tab titles. The pages every account shares do not name the client.
 clientName: Example Account
 
-# How the shared pages refer to your team: Home, How it works, the footer and the default page description.
-# It fills in "A shared space where ... finds, uses and builds Claude skills". Do not put the client's name
+# How the shared pages refer to your team: Home, Get started, the footer and the default page description.
+# It fills in "A shared library where ... adds the skills and tools it has built". Do not put the client's name
 # in it: the client belongs in clientName above, which appears on the account pages only.
 teamPhrase: the IBM consulting team
 
@@ -29,7 +29,7 @@ forbiddenTerms: []
 # generic core and out of non-account builds. Leave the list empty if there are none.
 clientAliases: []
 
-# One accent colour for small square markers on the account pages (the Skills library and Roadmap).
+# One accent colour for small square markers on the account pages (the Library and Roadmap).
 # It is never used for text, links, buttons or backgrounds. It must have 3:1 contrast on white and on
 # #161616, which `npm run check:account` tests. This placeholder is a Carbon teal.
 accentColour: "#009d9a"
@@ -50,11 +50,11 @@ logos:
 repoUrl: https://github.com/your-organisation/your-skills-repo
 
 # OPTIONAL. Only if the site code lives in a DIFFERENT repository from the skills. This is the site's
-# repository: it sets the site address (https://<owner>.github.io/<site-repo>/), and it receives "Propose a
-# skill" issues. The build then checks out repoUrl to read the skills. Delete this line if there is one repo.
+# repository: it sets the site address (https://<owner>.github.io/<site-repo>/), and it receives the
+# submission and "Suggest an idea" issues. The build then checks out repoUrl to read the skills. Delete this line if there is one repo.
 # siteRepoUrl: https://github.com/your-organisation/your-site-repo
 
-# Your workstreams, in the order they should appear in the Skills library filter.
+# Your teams, in the order they should appear in the Library filter. (The setting keeps its older name, workstreams.)
 # Every skill in skill-meta.yaml must use one of these names.
 workstreams:
   - Example workstream

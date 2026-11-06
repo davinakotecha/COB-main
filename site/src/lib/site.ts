@@ -60,8 +60,11 @@ export const repoUrl = clean(config.repoUrl);
 export const repoName = parseRepo(config.repoUrl)?.repo ?? 'skills-repo';
 /** The repository that holds this site. It is the skills repository unless siteRepoUrl is set. */
 export const siteRepoUrl = clean(config.siteRepoUrl || config.repoUrl);
-/** "Propose a skill" opens an issue form, and the form lives in the site repository's .github folder. */
+/** "Suggest an idea" opens an issue form, and the form lives in the site repository's .github folder. */
 export const issueUrl = `${siteRepoUrl}/issues/new?template=skill-idea.yml&labels=skill-idea`;
+/** "Submit your skill" opens the submission form. Pass an asset type's formLabel to pre-select it. */
+export const submitUrl = (assetLabel?: string) =>
+  `${siteRepoUrl}/issues/new?template=submit-asset.yml&labels=submission${assetLabel ? `&asset-type=${encodeURIComponent(assetLabel)}` : ''}`;
 
 // ---------- brand ----------
 /** The accent marks account pages only, and only in account mode. Otherwise it is IBM blue. */
@@ -106,18 +109,14 @@ for (const l of [logos.lead, logos.client]) {
 // ---------- hosting and build info ----------
 export const buildInfo = buildJson as { sha: string | null; skillsSha: string | null; skillsShaShort: string | null; date: string; builtAt: string };
 
-// ---------- navigation ----------
-export type NavKey = 'home' | 'how' | 'skills' | 'roadmap' | 'contribute';
-export const nav: { key: NavKey; label: string; href: string; account: boolean }[] = [
-  { key: 'home', label: 'Home', href: '/', account: false },
-  { key: 'how', label: 'How it works', href: '/how-it-works/', account: false },
-  { key: 'skills', label: 'Skills library', href: '/skills/', account: true },
-  { key: 'roadmap', label: 'Roadmap', href: '/roadmap/', account: true },
-  { key: 'contribute', label: 'Contribute', href: '/contribute/', account: false },
-];
+// ---------- navigation and asset types (pure data, shared with the tests) ----------
+export { nav } from './nav';
+export type { NavKey } from './nav';
+export { assetTypes, assetByKey, riskRows } from './assets';
+export type { AssetKey, AssetType } from './assets';
 
 /**
- * The browser-tab title. Account pages (Skills library, skill and reference pages, Roadmap) carry the long
+ * The browser-tab title. Account pages (the Library, skill and reference pages, Roadmap) carry the long
  * name, which names the client. Every other page uses the short site name, so the client is not named there.
  */
 export const pageTitle = (page: string, account = false) => `${page} - ${account ? t.fullName : t.siteName}`;

@@ -1,0 +1,181 @@
+---
+// Security: the view for risk and security reviewers. It states only controls that exist today.
+// Anything that is proposed, or not yet in place, is labelled "to be confirmed with security".
+// Generic text only: it names no account. The account can add its own lines in copy.yaml (security.extra).
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { copy, riskRows, withBase } from '../lib/site';
+
+const extra: { title: string; body: string }[] = copy?.security?.extra ?? [];
+
+const inPlace = [
+  {
+    title: 'Submissions go to a maintainer',
+    body: 'The submission form sends every skill to a maintainer, who reads it and adds it to the library. The review list is below.',
+  },
+  {
+    title: 'The build checks every skill',
+    body: 'Each build fails if a skill is missing its details. It also scans the repository for ticket-style keys and e-mail addresses, and for a list of denied terms where one has been set up.',
+  },
+  {
+    title: 'Examples use made-up data',
+    body: 'Every example in the library uses an invented company, invented names and invented ticket numbers.',
+  },
+  {
+    title: 'The site is static and makes no third-party requests',
+    body: 'It is plain files on GitHub Pages. The generator and the search run in your browser and send nothing anywhere.',
+  },
+  {
+    title: 'Each skill shows its files',
+    body: "A skill's page lists its scripts and links to the source on GitHub, so you can read exactly what it contains.",
+  },
+];
+
+const reviewer = [
+  'The submission contains no client data, names, ticket numbers or figures, including in the examples.',
+  'There are no secrets: no passwords, tokens, keys or internal addresses.',
+  'SKILL.md and every reference file say what the skill really does.',
+  'Every script was read. It does only what the skill says, and its source is stated if it was not written by the author.',
+  'Network access, file writes outside the skill folder, and anything installed are declared.',
+  'The team, tagline and details are correct, so the right people find it.',
+];
+
+const open = [
+  {
+    title: 'Required reviewers and branch protection',
+    body: 'Whether the repository requires an approval before a change reaches the main branch. Until it does, anyone with write access can change the library directly.',
+  },
+  { title: 'Secret scanning in the build', body: 'A secret scanner has been run on the repository by hand. It is not yet part of the automated build.' },
+  { title: 'The approved coding agents', body: 'Which coding agents the account allows. Until this is confirmed, ask your lead before using a new one.' },
+  { title: 'Licence and ownership', body: 'No open-source licence has been granted, and who owns shared assets is not recorded here.' },
+  { title: 'Who to tell about a problem', body: 'The route for reporting a security concern with a published asset.' },
+  { title: 'Review depth for each type of asset', body: 'The table above is a proposal from the site authors, not an approved policy.' },
+];
+---
+
+<Base
+  title="Security"
+  current="security"
+  description="How shared skills and other assets are reviewed, what each type can do, and what is still to be confirmed with security."
+>
+  <PageHead
+    title="Security"
+    lede="For risk and security reviewers: what a shared asset can do, how it is checked before it is published, and what is still open."
+  />
+
+  <section aria-labelledby="h-can">
+    <div class="wrap grid">
+      <div class="c-a">
+        <h2 id="h-can">What a shared asset can do</h2>
+        <p class="body">
+          A skill is mostly text: instructions that steer a coding agent. Some also include scripts. A script runs on the user's own machine, with the user's own permissions, inside the coding agent. Most agents ask before they run a command, but the settings differ by tool and by user.
+        </p>
+        <p class="body">
+          A skill cannot give itself more access than the person using it already has. But a badly written or malicious script can still do whatever that person can do. That is why every script is read before a skill is published.
+        </p>
+      </div>
+      <div class="c-b">
+        <div class="warnbox" role="note">
+          <p><strong>To be confirmed with security.</strong> The risk levels and review depth below are proposed by the people who built this site. They are not an approved policy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-risk">
+    <div class="wrap">
+      <h2 id="h-risk">Risk by type of asset</h2>
+      <p class="sec-intro">Skills are live. The other types are placeholders, listed here so the review is agreed before any of them opens.</p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <caption class="vh">Risk and review for each type of asset</caption>
+          <thead>
+            <tr>
+              <th scope="col">Type of asset</th>
+              <th scope="col">What it can do</th>
+              <th scope="col">Proposed risk</th>
+              <th scope="col">What the review checks</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              riskRows.map((r) => (
+                <tr>
+                  <th scope="row">{r.asset}</th>
+                  <td>{r.can}</td>
+                  <td><span class={`risk risk-${r.risk.toLowerCase()}`}>{r.risk}</span></td>
+                  <td>{r.review}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-place">
+    <div class="wrap">
+      <h2 id="h-place">What is in place today</h2>
+      <p class="sec-intro">Only controls that exist now. Nothing here is planned or assumed.</p>
+      <ul class="rules">
+        {
+          inPlace.map((r) => (
+            <li>
+              <h3>{r.title}</h3>
+              <p>{r.body}</p>
+            </li>
+          ))
+        }
+        {
+          extra.map((r) => (
+            <li>
+              <h3>{r.title}</h3>
+              <p>{r.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-rev">
+    <div class="wrap">
+      <h2 id="h-rev">What a reviewer checks</h2>
+      <p class="sec-intro">The list a maintainer works through before adding a skill. Authors see the matching list on the <a href={withBase('/share/')}>Share</a> page.</p>
+      <ul class="checklist">
+        {
+          reviewer.map((c) => (
+            <li>
+              <p>{c}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-open">
+    <div class="wrap">
+      <h2 id="h-open">Still to be confirmed with security</h2>
+      <p class="sec-intro">These are not in place, or not decided. They are listed so nobody assumes otherwise.</p>
+      <ul class="open-items">
+        {
+          open.map((o) => (
+            <li>
+              <strong><span class="tbc">To be confirmed</span>{o.title}</strong>
+              <span>{o.body}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <div class="bandblue">
+    <div class="wrap">
+      <p>Ready to share a skill?</p>
+      <a class="btn" href={withBase('/share/')}>Go to Share</a>
+    </div>
+  </div>
+</Base>

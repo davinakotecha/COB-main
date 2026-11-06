@@ -1,0 +1,88 @@
+---
+// One layout for every placeholder page (Agents, Plugins, Connectors, Prompts and templates).
+// The content comes from lib/assets.ts so the Home tiles, the tab bar and these pages cannot disagree.
+// A placeholder page says plainly that nothing is published yet. It holds no account content, so it is not
+// an account page: it uses the short site name and never names the client.
+import Base from '../layouts/Base.astro';
+import PageHead from './PageHead.astro';
+import AssetTabs from './AssetTabs.astro';
+import { assetByKey, submitUrl, withBase } from '../lib/site';
+import type { AssetKey } from '../lib/site';
+
+interface Props {
+  asset: AssetKey;
+}
+const a = assetByKey(Astro.props.asset);
+---
+
+<Base
+  title={`${a.label} (placeholder)`}
+  current="library"
+  description={`A placeholder for shared ${a.label.toLowerCase()}. Nothing is published here yet.`}
+>
+  <PageHead title={a.label} />
+
+  <section class="tabsec">
+    <div class="wrap">
+      <AssetTabs current={a.key} />
+    </div>
+  </section>
+
+  <section class="ph-top">
+    <div class="wrap">
+      <div class="ph-banner" role="note">
+        <strong>Placeholder.</strong>{' '}Nothing is published here yet. This page sets out what {a.label.toLowerCase()} could hold, so teams can say whether it is worth building.
+      </div>
+
+      <div class="grid ph-grid">
+        <div class="c-a">
+          <h2>What this would hold</h2>
+          <p class="body">{a.holds}</p>
+          {a.more && <p class="body">{a.more}</p>}
+        </div>
+        <div class="c-b">
+          <h2 class="h-sm">Security level</h2>
+          <p class="body">
+            <span class={`risk risk-${(a.risk ?? 'Low').toLowerCase()}`}>{a.risk} risk</span>
+          </p>
+          <p class="body">{a.riskWhy}</p>
+          <p class="body"><a href={withBase('/security/')}>How assets are reviewed</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <h2>Ideas for {a.label.toLowerCase()}</h2>
+      <p class="sec-intro">None of these {a.label.toLowerCase()} exist yet. They show the kind of thing that could be shared.</p>
+      <div class="tiles">
+        {
+          a.ideas?.map((i) => (
+            <article class="tile">
+              <span class="tag2">Idea</span>
+              <span class="nm plain">{i.title}</span>
+              <p class="sub2">{i.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Needed before this opens</h2>
+      <ul class="plain-list">
+        {a.needs?.map((n) => <li>{n}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <div class="bandblue">
+    <div class="wrap">
+      <p>Built something like this? Tell us.</p>
+      <a class="btn" href={submitUrl(a.formLabel)} target="_blank" rel="noopener noreferrer">Offer one</a>
+    </div>
+  </div>
+</Base>

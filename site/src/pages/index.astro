@@ -1,16 +1,15 @@
 ---
+// Home: what the library is for, why it is worth sharing into, what is in it, and what was added lately.
+// It deliberately holds no step-by-step guide: Get started owns that, Share owns how to add an asset.
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import Steps from '../components/Steps.astro';
 import WhyShare from '../components/WhyShare.astro';
-import AccountChip from '../components/AccountChip.astro';
-import { withBase } from '../lib/site';
+import { assetTypes, skills, withBase } from '../lib/site';
+import { plural } from '../lib/text';
 
-const steps = [
-  { title: 'Find a skill', body: 'Browse the library. Every skill says what you give it and what you get back.' },
-  { title: 'Add it to Claude', body: 'A short, one-off setup. Each skill page has the steps.' },
-  { title: 'Ask Claude for the job', body: "Describe the task in plain words. Claude picks up the skill and follows the team's way of doing it." },
-];
+const teams = new Set(skills.map((s) => s.workstream));
+// The three most recently changed skills. A skill with no date (a build with no history) sorts last.
+const recent = [...skills].sort((a, b) => (b.lastChanged ?? '').localeCompare(a.lastChanged ?? '')).slice(0, 3);
 ---
 
 <Base title="Home" current="home">
@@ -18,47 +17,74 @@ const steps = [
 
   <section aria-labelledby="h-why">
     <div class="wrap">
-      <h2 id="h-why">Why share skills?</h2>
+      <h2 id="h-why">Why share what you build?</h2>
       <p class="sec-intro">Build it once, and the whole account benefits.</p>
       <WhyShare />
     </div>
   </section>
 
-  <section class="band" aria-labelledby="h-how">
+  <section class="band" aria-labelledby="h-find">
     <div class="wrap">
-      <h2 id="h-how">How it works</h2>
-      <p class="sec-intro">Using a skill takes three steps. There is nothing to build and no code to write.</p>
-      <Steps items={steps} columns={3} />
-      <div class="after"><a class="btn pri" href={withBase('/how-it-works/')}>Read the full walkthrough</a></div>
-    </div>
-  </section>
-
-  <section aria-labelledby="h-explore">
-    <div class="wrap">
-      <h2 id="h-explore">Explore the account's space</h2>
-      <p class="sec-intro">Two pages belong to each account: the skills the team has built, and what is planned. They are marked with a coloured square.</p>
-      <AccountChip label="Account pages" />
+      <h2 id="h-find">What you can find here</h2>
+      <p class="sec-intro">Skills are live today. The other types are placeholders that show what could be shared next.</p>
       <div class="tiles">
-        <article class="tile">
-          <span class="nm plain">Skills library</span>
-          <p class="tg">Skills the team has built and shared.</p>
-          <p class="sub2">Each skill says what it does, what you give it, and how to add it to Claude.</p>
-          <div class="acts"><a class="btn pri sm" href={withBase('/skills/')}>Open the library</a></div>
-        </article>
-        <article class="tile">
-          <span class="nm plain">Roadmap</span>
-          <p class="tg">Ideas raised, work in progress, and what is live.</p>
-          <p class="sub2">See what is coming and suggest a skill of your own.</p>
-          <div class="acts"><a class="btn pri sm" href={withBase('/roadmap/')}>Open the roadmap</a></div>
+        {
+          assetTypes.map((a) => (
+            <article class="tile">
+              <span class="tag2">{a.live ? 'Live' : 'Placeholder'}</span>
+              <span class="nm plain">{a.label}</span>
+              <p class="sub2">{a.blurb}</p>
+              {a.live && skills.length > 0 && (
+                <p class="sub2">
+                  {plural(skills.length, 'skill')} from {plural(teams.size, 'team')}.
+                </p>
+              )}
+              <div class="acts">
+                <a class:list={['btn', 'sm', a.live ? 'pri' : 'sec']} href={withBase(a.href)}>
+                  {a.live ? 'Browse the library' : 'See the idea'}
+                </a>
+              </div>
+            </article>
+          ))
+        }
+        <article class="tile invite">
+          <span class="nm plain">Built something others could use?</span>
+          <p class="sub2">Add it to the library, and it will show the team that made it.</p>
+          <div class="acts"><a class="btn sec sm" href={withBase('/share/')}>Share yours</a></div>
         </article>
       </div>
     </div>
   </section>
 
+  {
+    recent.length > 0 && (
+      <section aria-labelledby="h-recent">
+        <div class="wrap">
+          <h2 id="h-recent">Recently shared</h2>
+          <p class="sec-intro">The latest skills in the library, with the team behind each.</p>
+          <ul class="recent">
+            {recent.map((s) => (
+              <li>
+                <span class="tag2">{s.workstream}</span>
+                <a class="nm" href={withBase(`/skills/${s.slug}/`)}>
+                  {s.name}
+                </a>
+                <span class="tg">{s.tagline}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
   <div class="bandblue">
     <div class="wrap">
-      <p>Spot a task the team repeats? Turn it into a skill.</p>
-      <a class="btn" href={withBase('/contribute/')}>Add a skill</a>
+      <p>Is there a job your team keeps repeating? Turn it into a skill.</p>
+      <div class="cta">
+        <a class="btn" href={withBase('/share/')}>Share yours</a>
+        <a class="btn" href={withBase('/get-started/')}>Get started</a>
+      </div>
     </div>
   </div>
 </Base>

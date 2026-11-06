@@ -3,10 +3,22 @@ name: Site
 on:
   push:
     branches: [main]
-    paths: ['site/**', 'account/**', 'skills/**', 'examples/**', 'README.md', '.github/workflows/site.yml']
+    paths: ['site/**', 'account/**', 'skills/**', 'examples/**', 'README.md', '.github/workflows/site.yml', '.github/scripts/**']
   pull_request:
-    paths: ['site/**', 'account/**', 'skills/**', 'examples/**', 'README.md', '.github/workflows/site.yml']
+    paths: ['site/**', 'account/**', 'skills/**', 'examples/**', 'README.md', '.github/workflows/site.yml', '.github/scripts/**']
   workflow_dispatch:
+  # When the skills live in this repository, a push that touches skills/ or examples/ builds the site (above), and
+  # the timer below is a safety net that usually stops at the check. When the skills live in a separate
+  # repository, a change there does not trigger this workflow, so the timer is what notices it: every six hours it
+  # compares the skills repository's head with the commit the live site was built from, and builds only when
+  # they differ. No access token is needed for a public repository.
+  # Scheduled runs can be delayed when GitHub is busy, so "within about six hours" is the promise. For an
+  # instant update use Actions > Site > Run workflow. GitHub switches scheduled workflows off in a public
+  # repository after 60 days with no repository activity; any commit here starts the clock again.
+  schedule:
+    - cron: '17 */6 * * *'
+  repository_dispatch:
+    types: [skills-updated]
 
 # Known-good set from the Astro deploy guide. Narrowed per job in the security phase.
 permissions:
@@ -15,7 +27,30 @@ permissions:
   id-token: write
 
 jobs:
+  # Scheduled runs only: is there anything new to publish? Other triggers always build.
+  check:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      rebuild: ${{ steps.compare.outputs.rebuild }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+      - run: python -m pip install pyyaml
+      # Fails the run (and so deploys nothing) if the skills repository cannot be read.
+      - name: Compare the skills repository with the live site
+        id: compare
+        run: python .github/scripts/skills_changed.py
+
   build:
+    needs: check
+    # A push, pull request, manual run or dispatch always builds (check is skipped for those). A scheduled
+    # run builds only when check found something new. If check itself failed, nothing is built.
+    if: ${{ always() && (github.event_name != 'schedule' || needs.check.outputs.rebuild == 'true') }}
     runs-on: ubuntu-latest
     env:
       # @carbon/* packages ship an optional install-time usage-telemetry script. Switch it off in CI.
@@ -23,7 +58,7 @@ jobs:
       # account | ibm-only | neutral. Leave the repository variable PUBLIC_BRAND_MODE unset to use
       # brandMode from account/account.config.yaml, or set it to change the mode without a commit.
       PUBLIC_BRAND_MODE: ${{ vars.PUBLIC_BRAND_MODE }}
-      # SITE_URL and SITE_BASE are derived from repoUrl in account/account.config.yaml.
+      # SITE_URL and SITE_BASE are derived from siteRepoUrl (or repoUrl) in account/account.config.yaml.
       # Set them here only to override (for example for a custom domain).
     steps:
       - uses: actions/checkout@v7
@@ -33,18 +68,34 @@ jobs:
         with:
           python-version: '3.x'
       - run: python -m pip install pyyaml
+      # Is the skills repository a different repository from this one? (account.config.yaml says.)
+      - name: Find the skills repository
+        id: skills
+        run: python .github/scripts/skills_repo.py
+      - name: Check out the skills repository
+        if: steps.skills.outputs.repo != ''
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ steps.skills.outputs.repo }}
+          path: skills-repo
+          fetch-depth: 0
+          # A public skills repository needs no token. For a private one, add a read-only token as the
+          # repository secret SKILLS_REPO_TOKEN.
+          token: ${{ secrets.SKILLS_REPO_TOKEN || github.token }}
       - uses: withastro/action@v6
         with:
           path: site
           build-cmd: npm run build:ci
         env:
+          # Empty when the skills are in this repository, so the build reads ./skills and ./examples.
+          SKILLS_REPO_ROOT: ${{ steps.skills.outputs.repo != '' && 'skills-repo' || '' }}
           # Optional: terms (one per line) that must never appear in tracked files. See site/scripts/check-confidentiality.mjs.
           DENY_TERMS: ${{ secrets.DENY_TERMS }}
 
   deploy:
     # Nothing publishes until the owner enables Pages (Settings > Pages > Source: GitHub Actions)
     # and sets the repository variable DEPLOY_PAGES to "true".
-    if: github.event_name != 'pull_request' && vars.DEPLOY_PAGES == 'true'
+    if: ${{ always() && needs.build.result == 'success' && github.event_name != 'pull_request' && vars.DEPLOY_PAGES == 'true' }}
     needs: build
     runs-on: ubuntu-latest
     concurrency:

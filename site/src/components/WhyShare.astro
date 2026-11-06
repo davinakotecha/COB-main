@@ -1,24 +1,17 @@
 ---
-// Three short points, shared by Home and How it works. `extra` adds one more sentence to each.
-interface Props {
-  extra?: boolean;
-}
-const { extra = false } = Astro.props;
+// Three short reasons to share. Used on Home only: Get started does not repeat them.
 const points = [
   {
     title: 'The same approach, whoever asks',
-    body: 'The way of doing the job is written down once, so it does not depend on who remembers it.',
-    more: 'Two people asking for the same thing get the same shape of answer.',
+    body: 'The way of doing a job is written down once, so it does not depend on who remembers it. Two people asking for the same thing get the same shape of answer.',
   },
   {
     title: 'Improvements reach everyone',
-    body: 'There is one copy of each skill to improve, so a fix helps the whole account at once.',
-    more: 'When someone finds a better way, they update the skill instead of telling people.',
+    body: 'There is one copy of each asset to improve, so a fix helps the whole account at once.',
   },
   {
     title: 'Faster starts for new joiners',
-    body: 'A new team member picks up what the team has already learned, instead of working it out again.',
-    more: 'The library shows what is already covered, so nobody rebuilds it.',
+    body: 'A new team member picks up what the account has already learned, instead of working it out again.',
   },
 ];
 ---
@@ -28,10 +21,7 @@ const points = [
     points.map((p) => (
       <div>
         <h3>{p.title}</h3>
-        <p>
-          {p.body}
-          {extra && ` ${p.more}`}
-        </p>
+        <p>{p.body}</p>
       </div>
     ))
   }

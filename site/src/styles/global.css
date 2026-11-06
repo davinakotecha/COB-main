@@ -195,11 +195,29 @@ h2 {
 .g100 .logo[data-rev] .rev {
   display: block;
 }
-/* No official reversed file: show the logo on a small white tile, on dark surfaces only. */
-[data-theme='dark'] .mast .logo:not([data-rev]) img,
-.g100 .logo:not([data-rev]) img {
+/* No official reversed file for at least one logo: the whole lockup sits on ONE white plate, on dark
+   surfaces only. Both logos share the plate's padding and are centred on it, so they read as one mark
+   and their heights no longer show. Every logo shows its full-colour file there, even one that has a
+   reversed file, because a white logo on a white plate would vanish. */
+[data-theme='dark'] .mast .plate[data-tile],
+.g100 .plate[data-tile] {
   background: #fff;
-  padding: 3px 8px;
+  padding: 7px 14px;
+  border-radius: 2px;
+}
+[data-theme='dark'] .mast .plate[data-tile] .logo .full,
+.g100 .plate[data-tile] .logo .full {
+  display: block;
+}
+[data-theme='dark'] .mast .plate[data-tile] .logo .rev,
+.g100 .plate[data-tile] .logo .rev {
+  display: none;
+}
+/* The rule between the logos is dark on the white plate (#6f6f6f on white is 5:1). */
+[data-theme='dark'] .mast .plate[data-tile] .psep,
+.g100 .plate[data-tile] .psep {
+  background: #6f6f6f;
+  opacity: 0.6;
 }
 .phlogo {
   font-size: 11px;
@@ -865,7 +883,7 @@ kbd {
   color: var(--text-2);
 }
 
-/* ---------- Contribute: two ways to draft a skill ---------- */
+/* ---------- Share: two ways to build a skill ---------- */
 .ways {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1424,7 +1442,8 @@ kbd {
   display: flex;
   margin-bottom: 8px;
 }
-.mini-tabs [role='tab'] {
+.mini-tabs [role='tab'],
+.mini-tabs button[aria-pressed] {
   background: none;
   border: 1px solid var(--border-strong);
   color: var(--text-2);
@@ -1434,10 +1453,14 @@ kbd {
   cursor: pointer;
   margin-left: -1px;
 }
-.mini-tabs [role='tab'][aria-selected='true'] {
+.mini-tabs [role='tab'][aria-selected='true'],
+.mini-tabs button[aria-pressed='true'] {
   background: var(--text);
   color: var(--bg);
   border-color: var(--text);
+}
+.tabs + .mini-tabs {
+  margin-top: 16px;
 }
 .demo-grid {
   display: grid;
@@ -2031,9 +2054,254 @@ pagefind-modal-trigger {
   --pf-modal-max-width: 720px;
 }
 
+/* ---------- Library tab bar, placeholder pages, tables, checklists ---------- */
+.tabsec {
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+}
+.atabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+.atabs a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  color: var(--text-2);
+  text-decoration: none;
+  font-size: 14px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.atabs a:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.atabs a[aria-current='page'] {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--c-blue-60);
+}
+.soon {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-2);
+  border: 1px solid var(--border-strong);
+  padding: 0 6px;
+  border-radius: 24px;
+}
+.ph-top {
+  padding-top: 48px;
+}
+.ph-banner {
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--c-blue-60);
+  background: var(--layer);
+  padding: 16px 20px;
+  margin-bottom: 48px;
+  max-width: 52em;
+}
+.ph-grid .c-a {
+  grid-column: 1 / 9;
+}
+.ph-grid .c-b {
+  grid-column: 10 / 17;
+}
+.h-sm {
+  font-size: 20px;
+  font-weight: 600;
+}
+.risk {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 2px 12px;
+  border-radius: 24px;
+  border: 1px solid var(--border-strong);
+}
+.risk-low::before,
+.risk-medium::before,
+.risk-high::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--text-2);
+}
+.risk-medium::before {
+  background: var(--text);
+}
+.risk-high::before {
+  background: var(--text);
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--text);
+}
+.plain-list {
+  margin: 0;
+  padding-left: 1.2em;
+  max-width: 46em;
+  font-size: 17px;
+}
+.plain-list li {
+  margin-bottom: 8px;
+}
+.tbl-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.tbl th,
+.tbl td {
+  text-align: left;
+  vertical-align: top;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.tbl thead th {
+  font-weight: 600;
+  background: var(--layer);
+  white-space: nowrap;
+}
+.tbl tbody th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tbl tbody tr:last-child th,
+.tbl tbody tr:last-child td {
+  border-bottom: 0;
+}
+.tbl td code {
+  font-size: 13px;
+}
+.tbl .risk {
+  font-size: 13px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 52em;
+  border-top: 1px solid var(--border);
+}
+.checklist li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.checklist li::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  margin-top: 4px;
+  border: 2px solid var(--text);
+}
+.checklist h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+.checklist p {
+  margin: 0;
+  color: var(--text-2);
+}
+.warnbox {
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--text);
+  padding: 16px 20px;
+  max-width: 52em;
+  margin: 0 0 32px;
+}
+.warnbox p {
+  margin: 0;
+}
+.tbc {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border-strong);
+  padding: 0 8px;
+  border-radius: 24px;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+.open-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 52em;
+  border-top: 1px solid var(--border);
+}
+.open-items li {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.open-items strong {
+  display: block;
+  margin-bottom: 2px;
+}
+.open-items span {
+  color: var(--text-2);
+}
+.recent {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.recent li {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 14rem) minmax(0, 1fr);
+  gap: 8px 24px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.recent .nm {
+  font: 400 16px var(--font-mono);
+}
+.recent .tg {
+  color: var(--text-2);
+}
+@media (max-width: 860px) {
+  .recent li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* On a narrow screen the asset tabs scroll sideways, like the main navigation, instead of wrapping into tall rows. */
+@media (max-width: 720px) {
+  .atabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 -16px;
+    padding: 0 8px;
+  }
+  .atabs::-webkit-scrollbar {
+    display: none;
+  }
+  .atabs a {
+    white-space: nowrap;
+    padding: 14px 12px;
+    flex: none;
+  }
+}
+
 /* ---------- responsive ---------- */
-@media (max-width: 1280px) {
-  /* With logos present the site name is dropped to save room. Without logos it is the only identity. */
+@media (max-width: 1340px) {
+  /* With logos present the site name is dropped to save room. Without logos it is the only identity.
+     Six navigation items and the dark-mode logo plate need this room up to about 1300px. */
   .mast .lockup:not(.solo) .site {
     display: none;
   }
@@ -2049,6 +2317,8 @@ pagefind-modal-trigger {
   .pipeline,
   .c-a,
   .c-b,
+  .ph-grid .c-a,
+  .ph-grid .c-b,
   .main-col,
   .rail-col {
     grid-column: 1 / -1;
@@ -2093,13 +2363,38 @@ pagefind-modal-trigger {
     transition-delay: 0s;
   }
 }
-@media (max-width: 860px) {
+/* Six navigation items need more room than the old five did, so the compact nav starts earlier, and the nav
+   drops to its own row before it can be clipped. Widths measured with the dark-mode logo plate, the widest case. */
+@media (max-width: 1000px) {
   .mast nav a {
     padding: 0 10px;
     font-size: 13px;
   }
   .mast nav a.acct::before {
     display: none;
+  }
+}
+@media (max-width: 900px) {
+  .mast-row {
+    flex-wrap: wrap;
+    gap: 0 8px;
+  }
+  .lockup {
+    min-height: var(--mast-h);
+  }
+  .tools {
+    margin-left: auto;
+  }
+  .mast nav {
+    order: 3;
+    flex: 1 1 100%;
+    margin-left: -32px;
+    margin-right: -32px;
+    padding: 0 24px;
+    border-top: 1px solid var(--border);
+  }
+  html {
+    scroll-padding-top: 112px;
   }
 }
 @media (max-width: 720px) {

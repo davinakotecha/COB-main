@@ -27,9 +27,9 @@ const exampleHref = skill.exampleDir ? `${repoUrl}/tree/main/${skill.exampleDir}
 const hasPlain = !!(skill.give || skill.get || skill.needs);
 ---
 
-<Base title={skill.name} current="skills" account description={skill.tagline}>
+<Base title={skill.name} current="library" account description={skill.tagline}>
   <PageHead title={skill.name} lede={skill.tagline} account mono>
-    <p class="crumb" slot="crumb"><a href={withBase('/skills/')}>Skills library</a> / {skill.name}</p>
+    <p class="crumb" slot="crumb"><a href={withBase('/skills/')}>Library</a> / {skill.name}</p>
   </PageHead>
 
   <section>
@@ -80,8 +80,15 @@ const hasPlain = !!(skill.give || skill.get || skill.needs);
           )
         }
 
-        <h2 id="add-it-to-claude">Add it to Claude</h2>
-        <InstallPanel client:visible slug={skill.slug} repoUrl={repoUrl} repoName={repoName} zipHref={zipHref} />
+        <h2 id="add-it">Add it to your coding agent</h2>
+        <InstallPanel
+          client:visible
+          slug={skill.slug}
+          repoUrl={repoUrl}
+          repoName={repoName}
+          zipHref={zipHref}
+          securityHref={withBase('/security/')}
+        />
 
         {
           pair && (
@@ -106,7 +113,7 @@ const hasPlain = !!(skill.give || skill.get || skill.needs);
         {
           skill.description && (
             <details class="fold">
-              <summary>When Claude uses this</summary>
+              <summary>When the coding agent uses this</summary>
               <p>{skill.description}</p>
             </details>
           )
@@ -134,7 +141,7 @@ const hasPlain = !!(skill.give || skill.get || skill.needs);
       <aside class="rail-col" aria-label="At a glance">
         <h2>At a glance</h2>
         <dl>
-          <dt>Workstream</dt>
+          <dt>Team</dt>
           <dd>{skill.workstream}</dd>
           <dt>Status</dt>
           <dd>{skill.status}</dd>

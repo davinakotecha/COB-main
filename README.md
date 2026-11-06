@@ -1,7 +1,8 @@
-# IBM x The Co-operative Bank: Asset Based Consulting Knowledge Share
+# IBM x The Co-operative Bank: Asset Exchange
 
-A shared space where the IBM consulting team working with The Co-operative Bank finds, uses and builds Claude
-skills. This repository holds the skills **and** the website that publishes them.
+A shared library where the IBM consulting team working with The Co-operative Bank adds the skills and tools it has
+built, so the whole account can use them. Each one shows the team that made it. This repository holds the skills
+**and** the website that publishes them.
 
 **Live site:** https://davinakotecha.github.io/COB-main/
 
@@ -12,15 +13,15 @@ skills. This repository holds the skills **and** the website that publishes them
 
 | Folder | Holds |
 |---|---|
-| `skills/` | The skills themselves. Each skill is a folder with a `SKILL.md`, and often `references/` and `scripts/` |
+| `skills/` | The skills themselves. Each skill is a folder with a `SKILL.md`, and often `references/` and `scripts/`. A skill names its team in its `SKILL.md` |
 | `examples/` | Made-up samples that prove each skill works |
 | `site/` | The website (generic Astro code) |
 | `account/` | Everything specific to this account: names, logos, accent colour, roadmap |
 | `docs/` | How to set the site up for another account |
-| `.github/` | The workflow that builds and publishes the site, and the "Propose a skill" issue form |
+| `.github/` | The workflow that builds and publishes the site, and the two issue forms: "Submit a skill or other asset" and "Suggest an idea" |
 
 `account/account.config.yaml` sets `repoUrl` to this repository. The site address, the install commands, "View on
-GitHub" and the "Propose a skill" form all come from it.
+GitHub" and both issue forms all come from it.
 
 ## Publish it
 
@@ -30,10 +31,11 @@ GitHub" and the "Propose a skill" form all come from it.
 
 ## Adding a skill
 
-Add a folder under `skills/` and made-up samples under `examples/`, then push. A push that touches `skills/`,
+People submit a skill with the **Submit a skill or other asset** issue form, which they reach from the Share page. A
+maintainer reads it, adds the folder under `skills/` and made-up samples under `examples/`, then pushes. A push that touches `skills/`,
 `examples/`, `site/` or `account/` rebuilds and publishes the site.
 
-- A skill carries its site details in its own `SKILL.md`, in a `metadata` block (the generator on the Contribute
+- A skill carries its site details in its own `SKILL.md`, in a `metadata` block (the generator on the Share
   page writes it, and can check it for you). A skill that is missing them stops the build with a message naming the
   skill and the field, and the last good site stays live. See [`docs/ADD-AN-ACCOUNT.md`](docs/ADD-AN-ACCOUNT.md).
 - Every six hours the **Site** workflow also checks whether this repository has moved since the live site was built

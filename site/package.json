@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Asset Based Consulting Knowledge Share: a static site that publishes an account's Claude skills.",
+  "description": "Asset Exchange: a static site where an account shares its skills and tools.",
   "engines": {
     "node": ">=22.23.4"
   },

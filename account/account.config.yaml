@@ -1,13 +1,13 @@
 # Everything specific to this account lives in this folder. Nothing in site/ names it.
 # Fields are explained in docs/ADD-AN-ACCOUNT.md.
 
-siteName: Asset Based Consulting Knowledge Share
-fullName: "IBM x The Co-operative Bank: Asset Based Consulting Knowledge Share"
+siteName: Asset Exchange
+fullName: "IBM x The Co-operative Bank: Asset Exchange"
 leadBrand: IBM
 clientName: The Co-operative Bank
-# Used on the pages every account shares (Home, How it works, Contribute, the footer and the default page
+# Used on the pages every account shares (Home, Get started, Share, Security, the footer and the default page
 # description), so it must not name the client. The client's name appears only on the account pages:
-# Skills library, each skill and reference page, and Roadmap.
+# the Library (and its placeholder tabs), each skill and reference page, and Roadmap.
 teamPhrase: the IBM consulting team
 
 # Project and product words (system names, tool names) that must never appear in the generic core or in
@@ -41,10 +41,12 @@ logos:
 
 # The repository that holds the skills AND the site (one repository). Install commands and "View on GitHub"
 # are built from it, it sets the site address (https://davinakotecha.github.io/COB-main/), and it receives
-# "Propose a skill" issues. The skills are in its skills/ and examples/ folders, so the build needs no
+# submission and "Suggest an idea" issues. The skills are in its skills/ and examples/ folders, so the build needs no
 # second checkout. (The template also supports skills in a separate repository: see docs/ADD-AN-ACCOUNT.md.)
 repoUrl: https://github.com/davinakotecha/COB-main
 
+# The teams that share assets. The site calls them "teams"; the setting keeps its older name, "workstreams",
+# so existing skills (which say `ks-workstream` in their SKILL.md) keep building. Add a team by adding a line.
 # TO CONFIRM: "Conversational AI delivery" is a placeholder. Replace with the account's real names.
 workstreams:
   - Conversational AI delivery
@@ -53,7 +55,7 @@ workstreams:
 ticketPrefix: NWB
 fictionalName: Northwind Bank
 
-# Optional: where to ask for help (shown in the footer and on How it works).
+# Optional: where to ask for help (shown in the footer and on Get started).
 contactRoute: null
 
 # Default brand mode when PUBLIC_BRAND_MODE is not set: account | ibm-only | neutral.

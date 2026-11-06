@@ -1,0 +1,22 @@
+---
+// The Library's tab bar: Skills, then the placeholder asset types. These are links between pages, so they are
+// a navigation list (aria-current), not an ARIA tab widget. Placeholders are labelled as such.
+import { assetTypes, withBase } from '../lib/site';
+import type { AssetKey } from '../lib/site';
+
+interface Props {
+  current: AssetKey;
+}
+const { current } = Astro.props;
+---
+
+<nav class="atabs" aria-label="Types of asset">
+  {
+    assetTypes.map((a) => (
+      <a href={withBase(a.href)} aria-current={a.key === current ? 'page' : undefined}>
+        {a.label}
+        {!a.live && <span class="soon">Placeholder</span>}
+      </a>
+    ))
+  }
+</nav>

@@ -22,7 +22,7 @@ import { onTabKey } from '../lib/tabs';
 interface Props {
   ticketPrefix: string;
   fictionalName: string;
-  /** The account's workstreams, in order. A new skill must pick one. */
+  /** The account's teams (called workstreams in the config), in order. A new skill must pick one. */
   workstreams: string[];
 }
 
@@ -36,7 +36,7 @@ const START: SkillDraft = {
   tagline: "Turn a week of workshop notes into the team's standard status update.",
   give: 'The workshop notes, pasted in, and the reporting week.',
   get: 'A status update in the standard format, with anything the notes do not confirm marked as unconfirmed.',
-  needs: 'Nothing beyond Claude.',
+  needs: 'Nothing beyond your coding agent.',
   inputs: 'The workshop notes, pasted in\nThe reporting week',
   recipe: 'Read the notes and pick out progress, risks and next steps\nWrite each as one line in the standard format\nMark anything the notes do not confirm as unconfirmed',
   outOfScope: 'Naming owners or dates that are not in the notes',
@@ -47,7 +47,7 @@ const START: SkillDraft = {
 type Tab = 'skill' | 'readme' | 'roadmap';
 
 export default function Generator({ ticketPrefix, fictionalName, workstreams }: Props) {
-  // Start on the first workstream when there is only one, so the example passes straight away.
+  // Start on the first team when there is only one, so the example passes straight away.
   const [d, setD] = useState<SkillDraft>({ ...START, workstream: workstreams.length === 1 ? (workstreams[0] as string) : '' });
   const [tab, setTab] = useState<Tab>('skill');
   const set = (patch: Partial<SkillDraft>) => setD((prev) => ({ ...prev, ...patch }));
@@ -112,15 +112,15 @@ export default function Generator({ ticketPrefix, fictionalName, workstreams }: 
           <span class="count" aria-live="off">
             {d.description.length} / {DESC_MAX}
           </span>
-          <span class="hint">Say what the skill does and when Claude should use it.</span>
+          <span class="hint">Say what the skill does and when your coding agent should use it.</span>
         </label>
         <fieldset class="fld-group">
-          <legend>Details for the Skills library</legend>
-          <p class="hint">These fill the skill's tile and page on the site. They are saved in the skill's own SKILL.md, so the skill arrives complete.</p>
+          <legend>Details for the Library</legend>
+          <p class="hint">These fill the skill's tile and page in the Library, including the team that made it. They are saved in the skill's own SKILL.md, so the skill arrives complete.</p>
           <label class="fld">
-            Workstream
+            Team
             <select value={d.workstream} onChange={(e) => set({ workstream: (e.target as HTMLSelectElement).value })}>
-              <option value="">Choose a workstream</option>
+              <option value="">Choose a team</option>
               {workstreams.map((w) => (
                 <option key={w} value={w}>
                   {w}

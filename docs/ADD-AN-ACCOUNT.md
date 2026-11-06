@@ -6,9 +6,10 @@ a few commands. Allow about an hour for the first time.
 
 ## What you are building
 
-A website where your consulting team finds, uses and builds Claude skills. Three pages are the same for
-every account: **Home**, **How it works** and **Contribute**. Two pages belong to your account: the
-**Skills library** (with a page for each skill) and the **Roadmap**. Everything that belongs to your
+A website where your consulting team adds the skills and tools it has built, so the whole account can use them.
+These pages are the same for every account: **Home**, **Get started**, **Share**, **Security** and the placeholder
+pages for **Agents**, **Plugins**, **Connectors** and **Prompts and templates**. Two pages belong to your account:
+the **Library** (with a page for each skill) and the **Roadmap**. Everything that belongs to your
 account lives in one folder, `account/`, plus your skills in `skills/`.
 
 ## Before you start
@@ -35,15 +36,15 @@ Open it in any text editor. Every field has a comment. This table says where eac
 | `siteName` | The site's name | Masthead, hero headline, page titles of the shared pages |
 | `fullName` | The long name, for example "IBM x Client: Name" | Browser-tab titles of the account pages |
 | `leadBrand` | The brand that leads (IBM) | Lead logo, footer |
-| `clientName` | Your client's name. It is the only place the client is named | The account pages only: chip and title of the Skills library, each skill and reference page, and the Roadmap |
-| `teamPhrase` | How the shared pages describe your team, without naming the client, for example "the IBM consulting team" | The hero line, How it works, the footer, the default page description |
+| `clientName` | Your client's name. It is the only place the client is named | The account pages only: chip and title of the Library, each skill and reference page, and the Roadmap |
+| `teamPhrase` | How the shared pages describe your team, without naming the client, for example "the IBM consulting team" | The hero line, Get started, the footer, the default page description |
 | `clientAliases` | Other short forms of the client's name (can be empty) | Checks only |
 | `forbiddenTerms` | System or tool names that must stay out of the generic core (can be empty) | Checks only |
 | `accentColour` | One hex colour, for example `"#009d9a"` | Small squares on account pages |
 | `logos` | File names inside `account/brand/` | Masthead, footer |
 | `repoUrl` | The address of the repository that holds your **skills** | Install commands, "View on GitHub", the site address (if there is one repository) |
-| `siteRepoUrl` | Only if the site code is in a **different** repository from the skills | The site address and the "Propose a skill" form |
-| `workstreams` | Your workstreams, in the order for the filter | Library filter, skill tiles |
+| `siteRepoUrl` | Only if the site code is in a **different** repository from the skills | The site address and the submission and "Suggest an idea" forms |
+| `workstreams` | Your teams, in the order for the filter. The setting keeps its older name; the site calls them "teams" | Library filter, skill tiles |
 | `ticketPrefix` and `fictionalName` | A made-up prefix and company for examples | The generator and the confidentiality check |
 | `contactRoute` | Where to ask for help (optional) | Footer |
 | `brandMode` | `neutral`, `ibm-only` or `account` | Whether logos and the client name appear |
@@ -56,7 +57,7 @@ contrast against white and against near-black, and the check in step 6 tells you
 Put the official SVG files in `account/brand/` and list them under `logos`. Use the files exactly as
 supplied by the brand owners. **Never redraw, trace, recolour or crop a logo.** If a brand supplies a white
 ("reversed") version, list it as `ibmReversed` or `clientReversed`; the site uses it on dark surfaces.
-Without one, that logo sits on a small white tile in dark mode. The placeholders that ship with the template
+Without one for every logo, the whole logo lockup sits on one white plate in dark mode. The placeholders that ship with the template
 are dashed boxes, not anyone's real logo.
 
 ### 4. Add your skills
@@ -84,7 +85,7 @@ metadata:
 
 Why `metadata` and a `ks-` prefix: the Agent Skills specification allows an optional `metadata` map of text
 values, and Anthropic's skill-creator validator rejects any other unknown top-level key, so a plain
-`workstream:` line would make skill-creator call the skill invalid. The generator on the Contribute page
+`workstream:` line would make skill-creator call the skill invalid. The generator on the Share page
 writes this block for you and checks it with the same rules as the build.
 
 `ks-workstream`, `ks-tagline`, `ks-give` and `ks-get` are required. In CI, a skill missing one (or with a
@@ -217,9 +218,9 @@ the client, rename the repository before the first deploy.
 - [ ] The public-or-private decision is recorded in `CLAUDE.md`.
 - [ ] `brandMode` is set on purpose.
 - [ ] Official logos replace the placeholders, and the accent colour is confirmed.
-- [ ] The data rule on **How it works** has been approved by your account lead. Edit it in `account/copy.yaml`,
+- [ ] The data rule on **Get started** has been approved by your account lead. Edit it in `account/copy.yaml`,
       and record their approval in `CLAUDE.md` (the page itself carries no "to be confirmed" note).
-- [ ] Workstream names are your real ones.
+- [ ] Team names are your real ones.
 - [ ] A person has run each install command on Windows and on macOS or Linux.
 - [ ] The footer licence wording matches your README.
 - [ ] You have decided whether to remove `noindex`.

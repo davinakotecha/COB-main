@@ -1,0 +1,48 @@
+---
+// A table of where each coding agent looks for skills. Used on Get started only; each skill page has the
+// copy-and-paste commands (InstallPanel). Both read lib/tools.ts, so they cannot disagree.
+import { TOOLS, STANDARD_URL } from '../lib/tools';
+---
+
+<div class="tbl-wrap">
+  <table class="tbl">
+    <caption class="vh">Where each coding agent looks for skills</caption>
+    <thead>
+      <tr>
+        <th scope="col">Coding agent</th>
+        <th scope="col">Personal skills (all your projects)</th>
+        <th scope="col">Project skills (shared through a repository)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        TOOLS.filter((t) => t.personal !== null).map((t) => (
+          <tr>
+            <th scope="row">{t.label}</th>
+            <td>
+              <code>{t.personal}</code>
+              {t.personalAlso.map((p) => (
+                <>
+                  <br />
+                  <code>{p}</code>
+                </>
+              ))}
+            </td>
+            <td>
+              <code>{t.project}</code>
+              {t.projectAlso.map((p) => (
+                <>
+                  <br />
+                  <code>{p}</code>
+                </>
+              ))}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+<p class="note">
+  These tools all read skills in the open <a href={STANDARD_URL} target="_blank" rel="noopener noreferrer">Agent Skills</a> format, so one skill works in each. Other tools that support the format will have their own folders: check their setup guide. Vendors change these paths, so check the tool's own documentation if one does not work.
+</p>

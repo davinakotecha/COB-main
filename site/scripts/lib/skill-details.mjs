@@ -16,7 +16,7 @@
 //     ks-pairs-via: "..."       (optional)
 //
 // Per field the order is: SKILL.md `metadata`, then the account's skill-meta.yaml overlay (older skills
-// that we do not edit), then nothing. This file is shared by the build (prep.mjs) and the Contribute
+// that we do not edit), then nothing. This file is shared by the build (prep.mjs) and the Share
 // generator, so a skill made with the generator always passes the build. No Node imports.
 
 export const DETAIL_KEYS = {
@@ -36,7 +36,7 @@ export const REQUIRED_DETAILS = ['workstream', 'tagline', 'give', 'get'];
 /** Longer text breaks the tile layout, so it is a warning. */
 export const DETAIL_LIMITS = { tagline: 120, give: 200, get: 200, needs: 200 };
 
-export const FIX_HINT = 'Add the `metadata` block shown on the Contribute page.';
+export const FIX_HINT = 'Add the `metadata` block shown on the Share page.';
 
 const KEY_SET = new Set(Object.values(DETAIL_KEYS));
 const isBlank = (v) => v === undefined || v === null || (typeof v === 'string' && v.trim() === '');
@@ -66,7 +66,7 @@ export function detailProblems(field, value, workstreams = []) {
 const WORDS = {
   missing: (k) => `"${k}" is missing.`,
   'not-string': (k) => `"${k}" must be text. Put the value in double quotes.`,
-  'unknown-workstream': (k, p, ws) => `"${k}" is not one of the account's workstreams (${ws.join(', ') || 'none are listed'}).`,
+  'unknown-workstream': (k, p, ws) => `"${k}" is not one of the account's teams (${ws.join(', ') || 'none are listed'}). Teams are listed as workstreams in account.config.yaml.`,
   'too-long': (k, p) => `"${k}" is ${p.length} characters. Keep it under ${p.limit} so the tile stays tidy.`,
 };
 

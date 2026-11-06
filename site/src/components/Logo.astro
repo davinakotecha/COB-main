@@ -1,7 +1,8 @@
 ---
 // One logo, from the account's brand folder. Never recoloured or redrawn.
-// Light surfaces get the full-colour file. Dark surfaces get the reversed file when there is one,
-// otherwise the full-colour file on a small white tile (see .logo rules in global.css).
+// Light surfaces get the full-colour file. Dark surfaces get the reversed file when there is one.
+// When any logo in the lockup has no reversed file, Plate.astro puts the whole lockup on one white plate
+// instead, and every logo then shows its full-colour file (see .plate[data-tile] in global.css).
 import type { Logo } from '../lib/site';
 import { isDev } from '../lib/site';
 

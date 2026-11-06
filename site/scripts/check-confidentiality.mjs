@@ -116,7 +116,7 @@ if (wantDist) {
     if (termsAvailable) scan(rel, text, terms, true, file.endsWith('.html'));
   }
 
-  // In account mode the client may be named on the account pages only: the Skills library, each skill and
+  // In account mode the client may be named on the account pages only: the Library, each skill and
   // reference page, and the Roadmap. Everywhere else its name must not appear in the visible text, the page
   // title or the meta description. Logos and their alt text and aria-labels are not text and are left alone.
   if (mode === 'account') {

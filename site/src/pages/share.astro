@@ -1,0 +1,178 @@
+---
+// Share: how to add a skill to the shared library. Build it, check it, submit it, and what happens next.
+// Everything about *using* a skill lives on Get started, and everything about review lives on Security.
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Steps from '../components/Steps.astro';
+import Generator from '../components/Generator';
+import { config, workstreams, withBase, submitUrl, issueUrl } from '../lib/site';
+import { RESERVED_WORDS, NAME_MAX, DESC_MAX, BODY_MAX_LINES } from '../lib/skill-rules';
+import { DETAIL_KEYS } from '../../scripts/lib/skill-details.mjs';
+
+const steps = [
+  { title: 'Build it', body: 'Write the skill with the generator below, or with your coding agent.' },
+  { title: 'Check it', body: 'Go through the author checklist. The generator checks the format for you.' },
+  { title: 'Submit it', body: 'Attach the zip to the submission form on GitHub.' },
+  { title: 'We review it', body: 'A maintainer reviews it and adds it to the library under your team.' },
+];
+
+const checklist = [
+  { title: 'No client data', body: 'No real client files, names, ticket numbers or figures, in the skill or in its examples.' },
+  { title: 'No secrets', body: 'No passwords, tokens, keys or internal addresses.' },
+  { title: 'Scripts do only what the skill says', body: 'Read every script yourself. If you did not write it, say where it came from.' },
+  { title: 'Reach is declared', body: 'If the skill uses the network, or writes outside its own folder, say so in SKILL.md and in "It needs".' },
+  { title: 'A made-up example is included', body: 'A small sample with invented names and figures, so others can see it work.' },
+  { title: 'Your team and details are filled in', body: 'The metadata block has your team, a tagline, what you give it and what you get.' },
+  { title: 'You tried it', body: 'You ran it with your coding agent and the result was right.' },
+];
+---
+
+<Base
+  title="Share"
+  current="share"
+  description="Add your skill to the shared library. Build it, check it, submit the zip, and it is published under your team."
+>
+  <PageHead title="Share" lede="Add your skill to the shared library so the whole account can use it. It will show the team that made it." />
+
+  <section aria-labelledby="h-add">
+    <div class="wrap">
+      <h2 id="h-add">Sharing a skill, in four steps</h2>
+      <p class="sec-intro">You do not need to be a developer. The generator below writes the starting file for you.</p>
+      <Steps items={steps} columns={4} />
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-build">
+    <div class="wrap">
+      <h2 id="h-build">1. Build it</h2>
+      <p class="sec-intro">Use either way, or both. Whichever you start with, finish in the generator so the library details are filled in.</p>
+      <div class="ways">
+        <div class="way">
+          <h3>The generator on this page</h3>
+          <p>Fill in the form and it writes <code>SKILL.md</code> for you, checked against the house rules as you type. It runs in your browser and sends nothing anywhere.</p>
+          <p class="dt">Best for a first draft, or when you want the rules checked as you go.</p>
+          <p><a href="#h-gen">Go to the generator</a></p>
+        </div>
+        <div class="way">
+          <h3>Draft and test it with your coding agent</h3>
+          <p>
+            Ask your coding agent to help you write the skill, then try it on a real job before you share it. Testing it on a few different requests shows whether it really changes the answers.
+          </p>
+          <p class="dt">Best when you want to see the skill working before you share it.</p>
+          <p class="way-h">If you use Claude Code</p>
+          <p class="dt">
+            Anthropic publishes a skill called <strong>skill-creator</strong> that drafts a skill, runs test prompts with and without it, and helps you revise. It is part of the <code>example-skills</code> plugin in <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener noreferrer">Anthropic's skills repository</a>.
+          </p>
+          <div class="cmd cmd-sm">
+            <pre tabindex="0">/plugin marketplace add anthropics/skills
+/plugin install example-skills@anthropic-agent-skills</pre>
+          </div>
+          <p class="dt">Then ask: <q>Use skill-creator to help me turn this job into a skill.</q> Use only tools your account has approved.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-gen">
+    <div class="wrap">
+      <h2 id="h-gen">Skill generator</h2>
+      <p class="sec-intro">It checks your skill against the house rules as you type. It runs in your browser and sends nothing anywhere.</p>
+      <Generator client:load ticketPrefix={config.ticketPrefix} fictionalName={config.fictionalName} workstreams={workstreams} />
+      <p class="body ways-end">
+        <strong>Keep the metadata block.</strong> The library needs <code>{DETAIL_KEYS.workstream}</code> (your team), <code>{DETAIL_KEYS.tagline}</code>, <code>{DETAIL_KEYS.give}</code> and <code>{DETAIL_KEYS.get}</code> to build the skill's tile and page. It will not publish a skill that is missing them. Your team is not on the list? Ask a maintainer to add it.
+      </p>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-check">
+    <div class="wrap">
+      <h2 id="h-check">2. Check it</h2>
+      <p class="sec-intro">Tick every item before you submit. A maintainer will check the same list, so it saves a round trip.</p>
+      <ul class="checklist">
+        {
+          checklist.map((c) => (
+            <li>
+              <div>
+                <h3>{c.title}</h3>
+                <p>{c.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="body" style="margin-top:24px">
+        See <a href={withBase('/security/')}>Security</a> for how assets are reviewed and why each point matters.
+      </p>
+
+      <h3 class="h-sm" style="margin:40px 0 8px">The rules in full</h3>
+      <p class="note" style="margin:0 0 16px">The generator checks most of these. They are here so you can see why.</p>
+      <details class="fold">
+        <summary>What is inside a skill</summary>
+        <pre class="tree">skills/a-skill/
+  SKILL.md     <em>short body: when to use it, and the recipe</em>
+  references/  <em>detail the agent loads only when needed</em>
+  scripts/     <em>deterministic helpers for the exact steps</em>
+examples/a-skill/
+               <em>made-up samples so others can see it work</em></pre>
+      </details>
+      <details class="fold">
+        <summary>House rules</summary>
+        <p>
+          Keep the SKILL.md body to roughly 150 to 200 lines and push detail into references. Never copy or paraphrase other skills' code or prose. Use only the made-up bank in anything you share ({config.fictionalName}, ticket prefix {config.ticketPrefix}-). Real client files stay on your own machine.
+        </p>
+      </details>
+      <details class="fold">
+        <summary>Limits from the Agent Skills specification</summary>
+        <p>
+          The name is 1 to {NAME_MAX} characters: lowercase letters, numbers and single hyphens, with no hyphen at either end. It must match the folder name and can't contain {RESERVED_WORDS.map((w) => `"${w}"`).join(' or ')} or any XML tags. The description is 1 to {DESC_MAX} characters, can't contain XML tags, and should say what the skill does and when to use it. Keep the whole SKILL.md under {BODY_MAX_LINES} lines. Claude Code also skips a skill folder named "synced".
+        </p>
+      </details>
+      <details class="fold">
+        <summary>Trying it before you share it</summary>
+        <p>
+          Copy the skill's folder into your coding agent's personal skills folder (the table on <a href={withBase('/get-started/#h-tools')}>Get started</a> lists them), then ask for the job.
+        </p>
+      </details>
+      <details class="fold">
+        <summary>If you have write access to the repository</summary>
+        <p>
+          You can open a pull request instead of using the form. Work on a branch, add the skill folder under <code>skills/</code> and the made-up samples under <code>examples/</code>, and commit with a sign-off. The same review applies.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-submit">
+    <div class="wrap">
+      <h2 id="h-submit">3. Submit it</h2>
+      <p class="sec-intro">Download the zip from the generator, then attach it to the submission form.</p>
+      <div class="warnbox" role="note">
+        <p>
+          <strong>This repository is public.</strong> Anything you attach to the form can be seen by anyone before it has been reviewed. Attach only the finished skill, with made-up examples. If you are unsure whether something is safe to share, ask your lead first.
+        </p>
+      </div>
+      <div class="cta">
+        <a class="btn pri" href={submitUrl()} target="_blank" rel="noopener noreferrer">Open the submission form</a>
+      </div>
+      <p class="note">The form opens on GitHub in a new tab. You need a GitHub account to submit it.</p>
+
+      <h3 class="h-sm" style="margin:40px 0 8px">What happens next</h3>
+      <ol class="plain-list">
+        <li>A maintainer checks your skill against the list above and the review points on the Security page.</li>
+        <li>They comment on your submission if anything needs to change.</li>
+        <li>They add the skill to the library. The site rebuilds, and your skill appears under your team.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-idea">
+    <div class="wrap">
+      <h2 id="h-idea">Not ready to build one?</h2>
+      <p class="sec-intro">Suggest the idea, and someone on the team can pick it up. Ideas appear on the roadmap.</p>
+      <div class="cta">
+        <a class="btn pri" href={issueUrl} target="_blank" rel="noopener noreferrer">Suggest an idea</a>
+        <a class="btn sec" href={withBase('/roadmap/')}>See the roadmap</a>
+      </div>
+    </div>
+  </section>
+</Base>

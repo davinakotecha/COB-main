@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This repo holds an account's Claude skills (`skills/`) and the website that publishes them
+This repo holds an account's skills (`skills/`) and the website that publishes them
 (`site/`, configured by `account/`). Apart from `site/`, there is no application code.
 
 ## Confidentiality rule (operating instruction, not a suggestion)
@@ -32,10 +32,14 @@ data) lives in `account/`. It reads `skills/` at build time; never copy skill co
 - Brand: components never hardcode logos, names or colours; everything comes from `account/`.
   Never redraw, trace, recolour or crop a logo. Use the official files as supplied.
 - The accent colour marks account pages with small squares only: never text, links, buttons or backgrounds.
-- The client's name appears on the account pages only (Skills library, skill and reference pages, Roadmap), as text
-  and in browser-tab titles. Its logo may appear everywhere. `teamPhrase` must not name the client.
+- The client's name appears on the account pages only (the Library, skill and reference pages, Roadmap), as text
+  and in browser-tab titles. The Security, Share, Get started and placeholder pages are not account pages. Its logo may appear everywhere. `teamPhrase` must not name the client.
 - A skill carries its own site details in `SKILL.md`, under `metadata` (`ks-workstream`, `ks-tagline`, `ks-give`,
   `ks-get`). In CI a skill missing them fails the build. `account/skill-meta.yaml` is an optional overlay.
 - Animations run once and respect `prefers-reduced-motion`. Nothing makes a third-party request.
 - Examples on the site stay in the invented-company universe.
+- The site is tool-neutral: it says "coding agent". Name a specific tool only where it is a fact the reader needs
+  (the per-tool setup table and install commands in `site/src/lib/tools.ts`, and a tip that is labelled as one option).
+- Each fact lives on one page and the others link to it. Home does not repeat Get started, and Get started does not
+  repeat Share.
 - Record the public-or-private decision here: `Visibility decision: <date, who, outcome>`.

@@ -1,0 +1,139 @@
+---
+// Get started: the instruction guide. What a skill is, how to use one, where each coding agent looks for
+// skills, what it looks like, and the ground rules. It does not repeat Home's "why share" or Share's
+// "how to add yours": it links to them.
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Chat from '../components/Chat.astro';
+import ToolTable from '../components/ToolTable.astro';
+import { copy, fill, withBase } from '../lib/site';
+
+// An account can replace the data rule in copy.yaml.
+const data = copy?.groundRules?.data ?? {
+  title: "Follow the account's data rules",
+  body: 'A skill is a set of instructions. It is not a different way of handling data. Anything you give your coding agent falls under the same client data rules as any other use of AI tools on the account. Ask your lead if you are unsure.',
+};
+
+const rules = [
+  {
+    title: 'Examples use made-up data',
+    body: 'Every example in the library uses made-up names and figures. Real client files, names and ticket numbers never go into the shared library.',
+  },
+  { title: data.title, body: data.body },
+  {
+    title: 'Check the work',
+    body: "Review what your coding agent produces before you rely on it, as you would a colleague's work. Skills flag what they could not check.",
+  },
+  { title: 'Use approved tools', body: 'Use a coding agent that your account has approved. The Security page explains how assets are reviewed.' },
+];
+---
+
+<Base
+  title="Get started"
+  current="start"
+  description="What a skill is, how to use one with your coding agent, and where each tool looks for skills."
+>
+  <PageHead
+    title="Get started"
+    lede={fill('Everything {teamPhrase} needs to use a shared skill: what it is, how to add it to your coding agent, and what to expect.')}
+  />
+
+  <section aria-labelledby="h-what">
+    <div class="wrap grid">
+      <div class="c-a">
+        <h2 id="h-what">What is a skill?</h2>
+        <p class="body">
+          A skill is a short set of written instructions, sometimes with helper files, that teaches a coding agent how our team does one job. For example, turning a week of workshop notes into the standard status update.
+        </p>
+        <p class="body">
+          The agent keeps a one-line description of every skill in mind and opens the full instructions only when a job calls for it, so skills stay out of the way the rest of the time. Skills are the first type of asset in the library. Agents, plugins and more may follow: the <a href={withBase('/skills/')}>Library</a> shows what is there today.
+        </p>
+      </div>
+      <div class="c-b">
+        <div class="panel">
+          <div class="panel-h"><span>What is inside a skill</span><span>A folder of files</span></div>
+          <div class="st-b">
+            <pre class="tree">a-skill/
+  SKILL.md     <em>when to use it, and how to do the job</em>
+  references/  <em>detail the agent reads only if needed</em>
+  scripts/     <em>helpers for the exact steps</em>
+  examples/    <em>made-up samples so you can see it work</em></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-steps">
+    <div class="wrap">
+      <h2 id="h-steps">Using a skill, in three steps</h2>
+      <ol class="vsteps rv">
+        <li>
+          <b class="vnum">1</b>
+          <div>
+            <h3>Find a skill</h3>
+            <p>Open the Library. Each skill says what you give it, what you get back, which team made it and what it needs on your machine.</p>
+            <p class="dt">Filter by team to find the work closest to yours. <a href={withBase('/skills/')}>Open the library</a></p>
+          </div>
+        </li>
+        <li>
+          <b class="vnum">2</b>
+          <div>
+            <h3>Add it to your coding agent</h3>
+            <p>Follow the short setup on the skill's page. You do this once per skill.</p>
+            <p class="dt">The page shows copy-and-paste commands for each tool. The next section lists where each tool keeps its skills.</p>
+          </div>
+        </li>
+        <li>
+          <b class="vnum">3</b>
+          <div>
+            <h3>Ask for the job</h3>
+            <p>Describe the task in plain words, as you would to a colleague. The agent recognises when the skill applies and follows the team's way of working.</p>
+            <p class="dt">You can also name the skill to be sure it is used.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-tools">
+    <div class="wrap">
+      <h2 id="h-tools">Where each coding agent keeps skills</h2>
+      <p class="sec-intro">A skill is a folder. Adding it means putting the folder where your coding agent looks.</p>
+      <ToolTable />
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="h-look">
+    <div class="wrap">
+      <h2 id="h-look">What it looks like</h2>
+      <p class="sec-intro">
+        An illustration with made-up details. A consultant has pasted in notes from the week's workshops, and an example skill turns them into the team's standard status update.
+      </p>
+      <Chat />
+    </div>
+  </section>
+
+  <section aria-labelledby="h-rules">
+    <div class="wrap">
+      <h2 id="h-rules">Ground rules</h2>
+      <ul class="rules">
+        {
+          rules.map((r) => (
+            <li>
+              <h3>{r.title}</h3>
+              <p>{r.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <div class="bandblue">
+    <div class="wrap">
+      <p>Built something that could help others?</p>
+      <a class="btn" href={withBase('/share/')}>Share yours</a>
+    </div>
+  </div>
+</Base>

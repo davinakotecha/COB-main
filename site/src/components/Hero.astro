@@ -16,12 +16,12 @@ const people = Array.from({ length: 12 }, (_, k) => k);
       <div class="hero-copy">
         <h1 id="h-home">{t.siteName}</h1>
         <p class="lede">
-          {fill('A shared space where {teamPhrase} finds, uses and builds Claude skills: reusable assets that capture how we do a job well.')}
+          {fill('A shared library where {teamPhrase} adds the skills and tools it has built, so the whole account can use them.')}
         </p>
-        <p class="lede2">A skill is a set of written instructions that teaches Claude how the team does one job. Build it once and everyone on the account can use it.</p>
+        <p class="lede2">Each one is tagged with the team that made it. It works with the coding agent you already use.</p>
         <div class="cta">
-          <a class="btn pri" href={withBase('/how-it-works/')}>See how it works</a>
-          <a class="btn sec" href={withBase('/skills/')}>Browse the skills</a>
+          <a class="btn pri" href={withBase('/skills/')}>Browse the library</a>
+          <a class="btn sec" href={withBase('/share/')}>Share yours</a>
         </div>
       </div>
 
@@ -35,19 +35,19 @@ const people = Array.from({ length: 12 }, (_, k) => k);
           <div class="panel" id="s1">
             <div class="panel-h"><span>A job someone does well</span><span>One person</span></div>
             <div class="st-b">
-              <p class="q">&ldquo;I explain the same job to Claude every week, and it never comes out the same way twice.&rdquo;</p>
+              <p class="q">&ldquo;I explain the same job to my coding agent every week, and it never comes out the same way twice.&rdquo;</p>
             </div>
           </div>
 
           <div class="conn" id="cA"><span class="fill"></span><span class="dot"></span><span class="lab">Write it down once</span></div>
 
           <div class="panel" id="s2">
-            <div class="panel-h"><span>Written once as a skill</span><span>The skills library</span></div>
+            <div class="panel-h"><span>Written once as a skill</span><span>Tagged with its team</span></div>
             <div class="st-b">
               <pre class="tree"><span style="--i:0">a-skill/</span>
-<span style="--i:1">  SKILL.md     <em>when to use it, and how to do the job</em></span>
-<span style="--i:2">  references/  <em>detail Claude reads only if needed</em></span>
-<span style="--i:3">  scripts/     <em>helpers for the exact steps</em></span></pre>
+<span style="--i:1">  SKILL.md     <em>the job, written down</em></span>
+<span style="--i:2">  references/  <em>extra detail</em></span>
+<span style="--i:3">  scripts/     <em>helpers</em></span></pre>
             </div>
           </div>
 
@@ -67,7 +67,7 @@ const people = Array.from({ length: 12 }, (_, k) => k);
                   ))
                 }
               </div>
-              <p class="cap">Each person who adds the skill. Illustration only.</p>
+              <p class="cap">Each figure is a person who uses the skill. Illustration only.</p>
             </div>
           </div>
         </div>

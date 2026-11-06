@@ -1,0 +1,73 @@
+name: Submit a skill or other asset
+description: Offer a finished skill, agent, plugin, connector or template for the shared library.
+title: "Submission: "
+labels: ["submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing. A maintainer will review your submission and add it to the library under your team.
+
+        **This repository is public. Anything you attach here can be seen by anyone before it has been reviewed.**
+        Attach only the finished asset, with made-up examples. Do not attach client data, real names, real ticket
+        keys, passwords, tokens or internal addresses.
+  - type: dropdown
+    id: asset-type
+    attributes:
+      label: Type of asset
+      options:
+        - Skill
+        - Agent
+        - Plugin
+        - MCP server or connector
+        - Prompt or template
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Name
+      description: For a skill, the folder name, in lowercase with hyphens, for example status-update-writer.
+    validations:
+      required: true
+  - type: input
+    id: team
+    attributes:
+      label: Your team
+      description: The team that made it. It is shown next to the asset in the library.
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What it does and when to use it
+      description: Two or three sentences in plain words.
+    validations:
+      required: true
+  - type: textarea
+    id: reach
+    attributes:
+      label: What it can reach
+      description: Does it run scripts, use the network, write files outside its own folder, or connect to another system? Write "Nothing" if not.
+    validations:
+      required: true
+  - type: textarea
+    id: zip
+    attributes:
+      label: The zip
+      description: Drag your zip file into this box to attach it. For a skill, use the zip from the generator on the Share page.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: It contains no client data, real names, real ticket numbers or figures, including in the examples.
+          required: true
+        - label: It contains no passwords, tokens, keys or internal addresses.
+          required: true
+        - label: I have read every script, and it does only what the description says.
+          required: true
+        - label: I tried it with my coding agent and the result was right.
+          required: true

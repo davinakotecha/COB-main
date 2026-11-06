@@ -1,7 +1,7 @@
 # OPTIONAL. You can delete this file.
 #
 # A skill states its own site details in its SKILL.md, under `metadata` (see the starter skill in skills/
-# for the block to copy, or use the generator on the Contribute page). The build reads them from there.
+# for the block to copy, or use the generator on the Share page). The build reads them from there.
 #
 # This file is only an overlay for a skill you cannot or do not want to edit: for each field the build uses
 # the skill's own `metadata` first, then the entry here, then nothing. A skill that ends up without a

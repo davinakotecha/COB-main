@@ -24,7 +24,7 @@ const draft = (over = {}) => ({
   tagline: 'Write the weekly status update from notes.',
   give: 'Workshop notes, pasted in.',
   get: 'A status update in the standard format.',
-  needs: 'Nothing beyond Claude.',
+  needs: 'Nothing beyond your coding agent.',
   inputs: 'Workshop notes',
   recipe: 'Read the notes\nWrite the update',
   outOfScope: 'Anything about people',
@@ -89,7 +89,7 @@ test('SKILL.md: the site details sit under metadata with the ks- prefix, never a
       '  ks-tagline: "Write the weekly status update from notes."',
       '  ks-give: "Workshop notes, pasted in."',
       '  ks-get: "A status update in the standard format."',
-      '  ks-needs: "Nothing beyond Claude."',
+      '  ks-needs: "Nothing beyond your coding agent."',
       '---',
     ].join('\n'),
   );
@@ -116,7 +116,7 @@ test('details checks: a complete draft passes, a missing one is marked Fix, a lo
   const missing = checkDetails(draft({ get: '   ' }), ws);
   assert.ok(missing.some((c) => c.level === 'bad' && /You get/.test(c.message)));
   assert.ok(checkDetails(draft({ workstream: '' }), ws).some((c) => c.level === 'bad'));
-  assert.ok(checkDetails(draft({ workstream: 'Somewhere else' }), ws).some((c) => c.level === 'bad' && /listed workstreams/.test(c.message)));
+  assert.ok(checkDetails(draft({ workstream: 'Somewhere else' }), ws).some((c) => c.level === 'bad' && /listed teams/.test(c.message)));
   const long = checkDetails(draft({ tagline: 'x'.repeat(130) }), ws);
   assert.ok(long.some((c) => c.level === 'warn' && /130 characters/.test(c.message)));
   assert.ok(!long.some((c) => c.level === 'bad'));
